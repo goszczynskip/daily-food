@@ -20,28 +20,8 @@ env:
   BORING_STACK_TOKEN: ${{ secrets.BORING_STACK_TOKEN }}
 
 jobs:
-  get-features:
-    runs-on: blacksmith-4vcpu-ubuntu-2404
-    outputs:
-      features: ${{ steps.list-features.outputs.features }}
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Setup
-        uses: ./tooling/github/setup
-
-      - name: List optional features
-        id: list-features
-        run: |
-          FEATURES_MATRIX=$(./scripts/get-features-combinations.sh)
-          echo "features=$FEATURES_MATRIX" >> $GITHUB_OUTPUT
-
   lint:
     runs-on: blacksmith-4vcpu-ubuntu-2404
-    needs: get-features
-    strategy:
-      matrix:
-        features: ${{ fromJSON(needs.get-features.outputs.features) }}
     steps:
       - uses: actions/checkout@v6
 
@@ -51,11 +31,6 @@ jobs:
       - name: Copy env
         shell: bash
         run: cp .env.example .env
-
-      - name: Install features
-        run: ./scripts/install-features.sh '${{ toJSON(matrix.features) }}'
-        env:
-          NODE_AUTH_TOKEN: ${{ github.token }}
 
       - name: Build internal packages
         run: pnpm build --filter='./packages/*'
@@ -65,10 +40,6 @@ jobs:
 
   format:
     runs-on: blacksmith-4vcpu-ubuntu-2404
-    needs: get-features
-    strategy:
-      matrix:
-        features: ${{ fromJSON(needs.get-features.outputs.features) }}
     steps:
       - uses: actions/checkout@v6
 
@@ -78,21 +49,12 @@ jobs:
       - name: Copy env
         shell: bash
         run: cp .env.example .env
-
-      - name: Install features
-        run: ./scripts/install-features.sh '${{ toJSON(matrix.features) }}'
-        env:
-          NODE_AUTH_TOKEN: ${{ github.token }}
 
       - name: Format
         run: pnpm format
 
   typecheck:
     runs-on: blacksmith-4vcpu-ubuntu-2404
-    needs: get-features
-    strategy:
-      matrix:
-        features: ${{ fromJSON(needs.get-features.outputs.features) }}
     steps:
       - uses: actions/checkout@v6
 
@@ -102,11 +64,6 @@ jobs:
       - name: Copy env
         shell: bash
         run: cp .env.example .env
-
-      - name: Install features
-        run: ./scripts/install-features.sh '${{ toJSON(matrix.features) }}'
-        env:
-          NODE_AUTH_TOKEN: ${{ github.token }}
 
       - name: Build internal packages
         run: pnpm build --filter='./packages/*'
@@ -116,22 +73,13 @@ jobs:
 
   test:
     name: Test
-    needs: get-features
     timeout-minutes: 15
     runs-on: blacksmith-4vcpu-ubuntu-2404
-    strategy:
-      matrix:
-        features: ${{ fromJSON(needs.get-features.outputs.features) }}
     steps:
       - uses: actions/checkout@v6
 
       - name: Setup
         uses: ./tooling/github/setup
-
-      - name: Install features
-        run: ./scripts/install-features.sh '${{ toJSON(matrix.features) }}'
-        env:
-          NODE_AUTH_TOKEN: ${{ github.token }}
 
       - name: Start supabase
         uses: supabase/setup-cli@v1
@@ -160,5 +108,5 @@ jobs:
         if: always()
         with:
           name: playwright-report
-          path: e2e/playwright-report/${{ join(matrix.features, '') }}
+          path: e2e/playwright-report
           retention-days: 30
