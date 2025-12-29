@@ -1,0 +1,6 @@
+# Supabase
+.branches
+.temp
+.env
+
+migrations/[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]_test_utils.sql

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://turborepo.org/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "e2e:dev": {
+      "cache": false
+    },
+    "e2e": {
+      "dependsOn": ["^build"],
+      "cache": false,
+      "env": [
+        "AUTH_ADMIN_EMAIL",
+        "AUTH_ADMIN_PASSWORD",
+        "TEST_USER_EMAIL",
+        "TEST_USER_PASSWORD"
+      ]
+    }
+  }
+}

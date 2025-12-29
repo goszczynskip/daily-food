@@ -1,0 +1,26 @@
+name: "Setup and install"
+description: "Common setup steps for Actions"
+
+inputs:
+  node-auth-token:
+    description: "Auth token for NPM"
+    required: false
+
+runs:
+  using: composite
+  steps:
+    - uses: pnpm/action-setup@v4
+    - uses: actions/setup-node@v6
+      with:
+        node-version: 24.12.0
+        cache: "pnpm"
+        scope: "@tonik"
+        registry-url: "https://npm.pkg.github.com"
+
+    - shell: bash
+      run: pnpm add -g turbo
+
+    - shell: bash
+      run: pnpm install
+      env:
+        NODE_AUTH_TOKEN: ${{ github.token }}

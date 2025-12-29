@@ -1,0 +1,14 @@
+{
+  "$schema": "https://boring-stack-tooling-registry.vercel.app/api/v1/config",
+  "formatCommand": "pnpm format:fix",
+  "installCommand": "pnpm install --no-frozen-lockfile",
+  "globalVariables": {
+    "appPath": "apps/nextjs",
+    "apiPath": "packages/api",
+    "supabasePath": "supabase",
+    "envPath": "packages/env",
+    "uiPath": "packages/ui",
+    "e2ePath": "e2e"
+  }
+}
+

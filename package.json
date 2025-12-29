@@ -1,0 +1,54 @@
+{
+  "name": "boring-stack",
+  "private": true,
+  "engines": {
+    "node": ">=24.12.0"
+  },
+  "type": "module",
+  "packageManager": "pnpm@10.26.1",
+  "scripts": {
+    "boostrap": "pnpm --filter '!@generators/*' install",
+    "boring-stack-cli": "pnpm boring-stack",
+    "build": "turbo run build",
+    "clean": "git clean -xdf node_modules",
+    "clean:workspaces": "turbo run clean",
+    "db:migrate": "turbo db:migrate",
+    "db:reset": "turbo db:reset",
+    "db:test": "pnpm --filter @tonik/supabase run test",
+    "dev": "tsx scripts/dev.ts",
+    "generate:types": "turbo run generate:types",
+    "format": "turbo run format --continue -- --cache --cache-location .cache/.prettiercache",
+    "format:fix": "turbo run format --force --continue -- --write --cache --cache-location .cache/.prettiercache",
+    "knip": "knip",
+    "lint": "turbo run lint --continue -- --cache --cache-location .cache/.eslintcache",
+    "lint:fix": "turbo run lint --continue -- --fix --cache --cache-location .cache/.eslintcache",
+    "lint:ws": "pnpm dlx sherif@latest",
+    "postinstall": "pnpm lint:ws",
+    "start": "turbo start",
+    "supabase:start": "pnpm --filter @tonik/supabase run start",
+    "supabase:stop": "pnpm --filter @tonik/supabase run stop",
+    "supabase": "pnpm --filter @tonik/supabase run supabase",
+    "test": "turbo test",
+    "e2e": "turbo e2e",
+    "e2e:dev": "pnpm --filter @tonik/e2e run e2e:dev",
+    "e2e:ui": "pnpm e2e:dev --ui",
+    "typecheck": "turbo run typecheck",
+    "ui-add": "pnpm --filter @tonik/ui run ui-add"
+  },
+  "devDependencies": {
+    "@tonik/boring-stack-cli": "^0.9.1",
+    "@tonik/prettier-config": "workspace:*",
+    "@turbo/gen": "catalog:",
+    "knip": "^5.75.1",
+    "lint-staged": "^16.2.7",
+    "ora": "^9.0.0",
+    "prettier": "catalog:",
+    "tsx": "^4.21.0",
+    "turbo": "^2.6.3",
+    "typescript": "catalog:"
+  },
+  "prettier": "@tonik/prettier-config",
+  "boring": {
+    "namespace": "tonik"
+  }
+}

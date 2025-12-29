@@ -1,0 +1,40 @@
+{
+  "name": "@tonik/api",
+  "dependencies": {
+    "@opentelemetry/api": "1.9.0",
+    "@tonik/env": "workspace:*",
+    "@tonik/logger": "workspace:*",
+    "@tonik/supabase": "workspace:*",
+    "@trpc/server": "catalog:",
+    "superjson": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@tonik/eslint-config": "workspace:*",
+    "@tonik/prettier-config": "workspace:*",
+    "@tonik/tsconfig": "workspace:*",
+    "eslint": "catalog:",
+    "pino": "^10.1.0",
+    "prettier": "catalog:",
+    "typescript": "catalog:"
+  },
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "license": "SEE LICENSE IN LICENSE",
+  "scripts": {
+    "build": "tsc",
+    "clean": "git clean -xdf .cache .turbo dist node_modules",
+    "dev": "tsc",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+  },
+  "prettier": "@tonik/prettier-config"
+}

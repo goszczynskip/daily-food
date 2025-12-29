@@ -1,0 +1,9 @@
+<h2>Confirm Your Signup</h2>
+
+<p>Follow this link to confirm your signup:</p>
+<p>
+  <a
+    href="{{ .SiteURL }}/api/auth/confirm?token_hash={{ .TokenHash }}&type=email&next={{ .RedirectTo }}"
+    >Confirm Your Email</a
+  >
+</p>

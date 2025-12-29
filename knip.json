@@ -1,0 +1,44 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "eslint": {
+    "entry": ["{apps,packages,e2e,supabase,tooling}/**/eslint.config.{mjs,js}"]
+  },
+  "ignore": [
+    "apps/nextjs/src/trpc/react.tsx",
+    "apps/nextjs/src/trpc/rsc.ts",
+    "**/turbo/generators/**/*"
+  ],
+  "ignoreDependencies": [
+    "@tonik/validators",
+    "@tonik/env",
+    "@turbo/gen",
+    "postcss"
+  ],
+  "ignoreBinaries": ["eslint"],
+  "workspaces": {
+    ".": {
+      "ignoreDependencies": ["prettier"]
+    },
+    "apps/nextjs": {
+      "ignoreDependencies": ["sharp"]
+    },
+    "e2e": {
+      "ignore": [
+        "assets/index.ts",
+        "helpers/drop.ts",
+        "helpers/supabase.ts",
+        "fixtures/base.ts"
+      ]
+    },
+    "packages/logger": {
+      "ignoreDependencies": ["pino-pretty"]
+    },
+    "packages/api": {
+      "ignore": ["src/trpc.ts"],
+      "ignoreDependencies": ["pino"]
+    },
+    "tooling/eslint": {
+      "ignoreDependencies": ["@eslint/js"]
+    }
+  }
+}

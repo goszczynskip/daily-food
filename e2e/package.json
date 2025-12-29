@@ -1,0 +1,32 @@
+{
+  "name": "@tonik/e2e",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "SEE LICENSE IN LICENSE",
+  "scripts": {
+    "clean": "git clean -xdf .cache .turbo dist node_modules playwright-report test-results",
+    "format": "prettier --check . --ignore-path ../.gitignore --ignore-path ./.gitignore",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false",
+    "e2e": "start-server-and-test 'cd ../ && pnpm start --ui stream' \"http://localhost:3000\" \"playwright test --config=playwright.config.ts\"",
+    "e2e:dev": "playwright test --config=playwright.config.ts",
+    "results": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "next",
+    "@t3-oss/env-nextjs": "^0.13.10",
+    "@tonik/eslint-config": "workspace:*",
+    "@tonik/prettier-config": "workspace:*",
+    "@tonik/supabase": "workspace:*",
+    "@tonik/tsconfig": "workspace:*",
+    "@types/node": "^24.10.4",
+    "eslint": "catalog:",
+    "next": "catalog:react",
+    "prettier": "catalog:",
+    "start-server-and-test": "^2.1.3",
+    "typescript": "catalog:",
+    "zod": "catalog:"
+  },
+  "prettier": "@tonik/prettier-config"
+}
