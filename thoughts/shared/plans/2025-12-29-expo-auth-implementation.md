@@ -995,15 +995,15 @@ export type { AuthContextType, AuthProviderProps, AuthState } from "./types";
 
 #### Automated Verification:
 
-- [ ] Package builds: `pnpm -C packages/auth-native build`
-- [ ] TypeScript checks pass: `pnpm -C packages/auth-native typecheck`
-- [ ] No missing dependencies or import errors
-- [ ] Linting passes: `pnpm lint`
+- [x] Package builds: `pnpm -C packages/auth-native build`
+- [x] TypeScript checks pass: `pnpm -C packages/auth-native typecheck`
+- [x] No missing dependencies or import errors
+- [x] Linting passes: `pnpm lint`
 
 #### Manual Verification:
 
-- [ ] Package exports are correct and importable
-- [ ] Types are properly exported
+- [x] Package exports are correct and importable
+- [x] Types are properly exported
 
 ---
 

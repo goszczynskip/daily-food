@@ -1,0 +1,42 @@
+{
+  "name": "@tonik/auth-native",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "default": "./src/index.ts"
+    },
+    "./provider": {
+      "types": "./dist/src/provider.d.ts",
+      "default": "./src/provider.tsx"
+    },
+    "./components": {
+      "types": "./dist/src/components/index.d.ts",
+      "default": "./src/components/index.ts"
+    }
+  },
+  "dependencies": {
+    "@tonik/auth": "workspace:*",
+    "zod": "catalog:"
+  },
+  "peerDependencies": {
+    "@invertase/react-native-apple-authentication": "^2.4.0",
+    "@react-native-google-signin/google-signin": "^13.0.0",
+    "@supabase/supabase-js": "^2.57.4",
+    "expo-linking": "~8.0.0",
+    "expo-secure-store": "~14.0.1",
+    "expo-web-browser": "~15.0.0",
+    "react": "*",
+    "react-native": "*"
+  },
+  "devDependencies": {
+    "@tonik/eslint-config": "workspace:*",
+    "@tonik/prettier-config": "workspace:*",
+    "@tonik/tsconfig": "workspace:*",
+    "@types/react": "~19.1.0",
+    "typescript": "catalog:"
+  }
+}
