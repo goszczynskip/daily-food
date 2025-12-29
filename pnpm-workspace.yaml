@@ -28,6 +28,8 @@ catalogs:
     react: ^19.2.3
     react-dom: ^19.2.3
 
+nodeLinker: hoisted
+
 onlyBuiltDependencies:
   - '@tailwindcss/oxide'
   - bufferutil
@@ -35,4 +37,5 @@ onlyBuiltDependencies:
   - esbuild
   - sharp
   - supabase
+  - unrs-resolver
   - utf-8-validate
