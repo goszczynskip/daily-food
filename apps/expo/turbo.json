@@ -4,6 +4,12 @@
   "tasks": {
     "dev": {
       "persistent": true
+    },
+    "ios": {
+      "persistent": true
+    },
+    "android": {
+      "persistent": true
     }
   }
 }
