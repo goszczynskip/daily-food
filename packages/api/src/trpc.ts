@@ -1,12 +1,4 @@
-/**
- * YOU PROBABLY DON'T NEED TO EDIT THIS FILE, UNLESS:
- * 1. You want to modify request context (see Part 1)
- * 2. You want to create a new middleware or type of procedure (see Part 3)
- *
- * tl;dr - this is where all the tRPC server stuff is created and plugged in.
- * The pieces you will need to use are documented accordingly near the end
- */
-import { initTRPC } from "@trpc/server";
+import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import z, { ZodError } from "zod";
 
@@ -33,7 +25,7 @@ interface SupabaseConfig {
  *
  * @see https://trpc.io/docs/server/context
  */
-export const createTRPCContext = (opts: {
+export const createTRPCContext = async (opts: {
   headers?: Headers;
   cookieStore?: CookieStore;
   supabase: SupabaseConfig;
@@ -54,17 +46,29 @@ export const createTRPCContext = (opts: {
     cookieStore: opts.cookieStore,
   });
 
+  const {
+    data: { user },
+  } = await supabaseAnonClient.auth.getUser();
+
+  const {
+    data: { session },
+  } = await supabaseAnonClient.auth.getSession();
+
   return {
     logLevel: opts.logLevel ?? "info",
     source,
     headers: opts.headers,
     protocol: opts.headers?.get("x-forwarded-proto") ?? "http",
+
     host:
       opts.headers?.get("x-forwarded-host") ??
       opts.headers?.get("host") ??
       "http://localhost:3000",
+
     supabase: supabaseAnonClient,
     __dangerousSupabaseServiceRole: supabaseServiceClient,
+    user,
+    session,
   };
 };
 
@@ -116,3 +120,25 @@ const baseProcedure = t.procedure.concat(loggerPlugin.logger);
  * can still access user session data if they are logged in
  */
 export const publicProcedure = baseProcedure;
+
+/**
+ * Protected (authenticated) procedure
+ *
+ * If you want a query or mutation to ONLY be accessible to logged in users, use this. It verifies
+ * the session is valid and guarantees `ctx.user` is not null.
+ *
+ * @see https://trpc.io/docs/procedures
+ */
+export const protectedProcedure = baseProcedure.use(({ ctx, next }) => {
+  if (!ctx.user) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+    });
+  }
+
+  return next({
+    ctx: {
+      user: ctx.user,
+    },
+  });
+});

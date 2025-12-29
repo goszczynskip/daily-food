@@ -1,6 +1,7 @@
 /** turbo gen: imports */
 import type { Browser, Page } from "@playwright/test";
 
+import type { UserAttributes } from "../../helpers/supabase";
 import { createSupabaseClient } from "../../helpers/supabase";
 import { WebAppLocators } from "./webapp-locators";
 
@@ -24,6 +25,9 @@ export class WebappPage {
   }
 
   /** turbo gen: methods */
+  isLoggedIn(user?: UserAttributes) {
+    return this.locators.userAvatar(user?.email?.charAt(0) ?? "").isVisible();
+  }
 
   async login({
     email,

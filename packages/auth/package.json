@@ -1,0 +1,62 @@
+{
+  "name": "@tonik/auth",
+  "dependencies": {
+    "@icons-pack/react-simple-icons": "^13.8.0",
+    "@marsidev/react-turnstile": "^1.4.0",
+    "@tonik/supabase": "workspace:*",
+    "@tonik/tailwind-config": "workspace:*",
+    "@tonik/ui": "workspace:*",
+    "lucide-react": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@tonik/eslint-config": "workspace:*",
+    "@tonik/prettier-config": "workspace:*",
+    "@tonik/tsconfig": "workspace:*",
+    "@turbo/gen": "catalog:",
+    "eslint": "catalog:",
+    "next": "catalog:react",
+    "prettier": "catalog:",
+    "react": "catalog:react",
+    "react-dom": "catalog:react",
+    "typescript": "catalog:"
+  },
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "default": "./src/index.ts"
+    },
+    "./*": {
+      "types": "./dist/src/*.d.ts",
+      "default": [
+        "./src/*.ts",
+        "./src/*.tsx"
+      ]
+    },
+    "./recipes/*": {
+      "types": "./dist/src/recipes/*.d.ts",
+      "default": [
+        "./src/recipes/*.tsx"
+      ]
+    }
+  },
+  "license": "SEE LICENSE IN LICENSE",
+  "scripts": {
+    "build": "tsc",
+    "clean": "git clean -xdf .cache .turbo dist node_modules",
+    "dev": "tsc",
+    "format": "prettier --check . --ignore-path ../../.gitignore --ignore-path ./.prettierignore",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+  },
+  "peerDependencies": {
+    "@supabase/supabase-js": "^2.57.4",
+    "next": "catalog:react",
+    "react": "catalog:react",
+    "react-dom": "catalog:react"
+  },
+  "prettier": "@tonik/prettier-config"
+}

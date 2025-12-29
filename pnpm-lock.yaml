@@ -117,9 +117,18 @@ importers:
       '@tonik/api':
         specifier: workspace:*
         version: link:../../packages/api
+      '@tonik/auth':
+        specifier: workspace:*
+        version: link:../../packages/auth
       '@tonik/env':
         specifier: workspace:*
         version: link:../../packages/env
+      '@tonik/logger':
+        specifier: workspace:*
+        version: link:../../packages/logger
+      '@tonik/supabase':
+        specifier: workspace:*
+        version: link:../../supabase
       '@tonik/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -271,6 +280,9 @@ importers:
       '@opentelemetry/api':
         specifier: 1.9.0
         version: 1.9.0
+      '@tonik/auth':
+        specifier: workspace:*
+        version: link:../auth
       '@tonik/env':
         specifier: workspace:*
         version: link:../env
@@ -308,6 +320,64 @@ importers:
       prettier:
         specifier: 'catalog:'
         version: 3.6.2
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+
+  packages/auth:
+    dependencies:
+      '@icons-pack/react-simple-icons':
+        specifier: ^13.8.0
+        version: 13.8.0(react@19.2.3)
+      '@marsidev/react-turnstile':
+        specifier: ^1.4.0
+        version: 1.4.1(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@supabase/supabase-js':
+        specifier: ^2.57.4
+        version: 2.57.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+      '@tonik/supabase':
+        specifier: workspace:*
+        version: link:../../supabase
+      '@tonik/tailwind-config':
+        specifier: workspace:*
+        version: link:../../tooling/tailwind
+      '@tonik/ui':
+        specifier: workspace:*
+        version: link:../ui
+      lucide-react:
+        specifier: 'catalog:'
+        version: 0.561.0(react@19.2.3)
+      zod:
+        specifier: 'catalog:'
+        version: 4.2.1
+    devDependencies:
+      '@tonik/eslint-config':
+        specifier: workspace:*
+        version: link:../../tooling/eslint
+      '@tonik/prettier-config':
+        specifier: workspace:*
+        version: link:../../tooling/prettier
+      '@tonik/tsconfig':
+        specifier: workspace:*
+        version: link:../../tooling/typescript
+      '@turbo/gen':
+        specifier: 'catalog:'
+        version: 2.6.3(@types/node@24.10.4)(typescript@5.9.3)
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.2(jiti@2.6.1)
+      next:
+        specifier: catalog:react
+        version: 15.5.9(@babel/core@7.26.10)(@opentelemetry/api@1.9.0)(@playwright/test@1.58.0-alpha-2025-12-28)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(sass@1.77.4)
+      prettier:
+        specifier: 'catalog:'
+        version: 3.6.2
+      react:
+        specifier: catalog:react
+        version: 19.2.3
+      react-dom:
+        specifier: catalog:react
+        version: 19.2.3(react@19.2.3)
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -1579,6 +1649,12 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.9':
     resolution: {integrity: sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ==}
+
+  '@marsidev/react-turnstile@1.4.1':
+    resolution: {integrity: sha512-1jE0IjvB8z+q1NFRs3149gXzXwIzXQWqQjn9fmAr13BiE3RYLWck5Me6flHYE90shW5L12Jkm6R1peS1OnA9oQ==}
+    peerDependencies:
+      react: ^17.0.2 || ^18.0.0 || ^19.0
+      react-dom: ^17.0.2 || ^18.0.0 || ^19.0
 
   '@napi-rs/wasm-runtime@1.1.0':
     resolution: {integrity: sha512-Fq6DJW+Bb5jaWE69/qOE0D1TUN9+6uWhCeZpdnSBk14pjLcCWR7Q8n49PTSPHazM37JqrsdpEthXy2xn6jWWiA==}
@@ -6483,6 +6559,11 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
+
+  '@marsidev/react-turnstile@1.4.1(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
+    dependencies:
+      react: 19.2.3
+      react-dom: 19.2.3(react@19.2.3)
 
   '@napi-rs/wasm-runtime@1.1.0':
     dependencies:

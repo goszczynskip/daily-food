@@ -1,8 +1,11 @@
-// Placeholder component that auth feature will overwrite once enabled
-// To use auth enable it via turbo generator
+import "server-only";
 
-function NavAuth() {
-  return null;
+import { api } from "~/trpc/rsc";
+import { NavAuthClient } from "./nav-auth.client";
+
+async function NavAuth() {
+  const user = await api.auth.me();
+  return <NavAuthClient user={user} />;
 }
 
 export { NavAuth };

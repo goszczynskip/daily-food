@@ -2,6 +2,7 @@
   "name": "@tonik/api",
   "dependencies": {
     "@opentelemetry/api": "1.9.0",
+    "@tonik/auth": "workspace:*",
     "@tonik/env": "workspace:*",
     "@tonik/logger": "workspace:*",
     "@tonik/supabase": "workspace:*",

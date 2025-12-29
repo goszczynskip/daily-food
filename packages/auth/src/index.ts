@@ -1,0 +1,1 @@
+export { getClaims } from "./common";
