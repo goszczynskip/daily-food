@@ -1196,17 +1196,17 @@ const styles = StyleSheet.create({
 
 #### Automated Verification:
 
-- [ ] Expo app type checks: `pnpm -C apps/expo typecheck`
-- [ ] Expo app bundles: `pnpm -C apps/expo start --no-dev`
-- [ ] No missing peer dependencies
+- [x] Expo app type checks: `pnpm -C apps/expo typecheck`
+- [x] Expo app bundles: `pnpm -C apps/expo start --no-dev`
+- [x] No missing peer dependencies
 
 #### Manual Verification:
 
-- [ ] App redirects to login screen when not authenticated
-- [ ] Login screen displays social login options
-- [ ] Email input works for magic links
-- [ ] Navigation flows work correctly after login
-- [ ] Logout works correctly
+- [x] App redirects to login screen when not authenticated
+- [x] Login screen displays social login options
+- [x] Email input works for magic links
+- [x] Navigation flows work correctly after login
+- [x] Logout works correctly
 
 ---
 

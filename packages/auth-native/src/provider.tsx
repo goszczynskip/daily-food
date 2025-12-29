@@ -1,5 +1,3 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
-import * as React from "react";
 import {
   createContext,
   useCallback,
@@ -12,7 +10,9 @@ import { AppState, Platform } from "react-native";
 import * as Linking from "expo-linking";
 import * as SecureStore from "expo-secure-store";
 import * as WebBrowser from "expo-web-browser";
-import { createClient } from "@supabase/supabase-js";
+
+import type { Database } from "@tonik/supabase";
+import { Supabase } from "@tonik/supabase";
 
 import type { AuthContextType, AuthProviderProps, AuthState } from "./types";
 
@@ -60,8 +60,8 @@ export function AuthProvider({
   });
 
   // Create Supabase client with secure storage
-  const supabase = useMemo<SupabaseClient>(() => {
-    return createClient(supabaseUrl, supabaseAnonKey, {
+  const supabase = useMemo(() => {
+    return Supabase.createClient<Database>(supabaseUrl, supabaseAnonKey, {
       auth: {
         storage: SecureStoreAdapter,
         autoRefreshToken: true,
@@ -102,12 +102,12 @@ export function AuthProvider({
       }
     };
 
-    initializeAuth();
+    void initializeAuth();
 
     // Listen for auth state changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
       console.log("Auth state changed:", event);
       updateState({
         session,
@@ -125,10 +125,10 @@ export function AuthProvider({
   useEffect(() => {
     const subscription = AppState.addEventListener(
       "change",
-      async (nextAppState) => {
+      (nextAppState) => {
         if (nextAppState === "active") {
           // Refresh session when app becomes active
-          await supabase.auth.getSession();
+          void supabase.auth.getSession();
         }
       },
     );
@@ -145,24 +145,22 @@ export function AuthProvider({
     }
 
     try {
-      const { AppleAuthentication } = await import(
+      const { appleAuth } = await import(
         "@invertase/react-native-apple-authentication"
       );
 
-      const credential = await AppleAuthentication.signInAsync({
-        requestedScopes: [
-          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
-          AppleAuthentication.AppleAuthenticationScope.EMAIL,
-        ],
+      const appleAuthRequestResponse = await appleAuth.performRequest({
+        requestedOperation: appleAuth.Operation.LOGIN,
+        requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
       });
 
-      if (!credential.identityToken) {
+      if (!appleAuthRequestResponse.identityToken) {
         throw new Error("No identity token returned from Apple");
       }
 
       const { error } = await supabase.auth.signInWithIdToken({
         provider: "apple",
-        token: credential.identityToken,
+        token: appleAuthRequestResponse.identityToken,
       });
 
       if (error) throw error;
@@ -182,13 +180,13 @@ export function AuthProvider({
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
 
-      if (!userInfo.idToken) {
+      if (!userInfo.data?.idToken) {
         throw new Error("No ID token returned from Google");
       }
 
       const { error } = await supabase.auth.signInWithIdToken({
         provider: "google",
-        token: userInfo.idToken,
+        token: userInfo.data.idToken,
       });
 
       if (error) throw error;

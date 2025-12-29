@@ -9,13 +9,18 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "lint": "eslint --cache --cache-location .cache/.eslintcache"
+    "lint": "eslint --cache --cache-location .cache/.eslintcache",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
+    "@invertase/react-native-apple-authentication": "^2.4.0",
+    "@react-native-google-signin/google-signin": "^13.0.0",
     "@react-navigation/bottom-tabs": "^7.4.0",
     "@react-navigation/elements": "^2.6.3",
     "@react-navigation/native": "^7.1.8",
+    "@supabase/supabase-js": "^2.57.4",
+    "@tonik/auth-native": "workspace:*",
     "expo": "~54.0.30",
     "expo-constants": "~18.0.12",
     "expo-dev-client": "^6.0.20",
@@ -24,6 +29,7 @@
     "expo-image": "~3.0.11",
     "expo-linking": "~8.0.11",
     "expo-router": "~6.0.21",
+    "expo-secure-store": "~15.0.8",
     "expo-splash-screen": "~31.0.13",
     "expo-status-bar": "~3.0.9",
     "expo-symbols": "~1.0.8",
@@ -40,11 +46,15 @@
     "react-native-worklets": "0.5.1"
   },
   "devDependencies": {
+    "@tonik/eslint-config": "workspace:*",
+    "@tonik/prettier-config": "workspace:*",
+    "@tonik/tsconfig": "workspace:*",
     "@types/react": "~19.1.0",
     "eslint": "^9.25.0",
     "eslint-config-expo": "~10.0.0",
-    "typescript": "~5.9.2"
+    "typescript": "catalog:"
   },
+  "prettier": "@tonik/prettier-config",
   "overrides": {
     "react-server-dom-webpack": "19.1.4"
   },

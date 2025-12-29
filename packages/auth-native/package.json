@@ -18,14 +18,22 @@
       "default": "./src/components/index.ts"
     }
   },
+  "scripts": {
+    "build": "tsc",
+    "clean": "git clean -xdf .cache .turbo dist node_modules",
+    "dev": "tsc",
+    "format": "prettier --check . --ignore-path ../../.gitignore --ignore-path ./.prettierignore",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+  },
   "dependencies": {
     "@tonik/auth": "workspace:*",
+    "@tonik/supabase": "workspace:*",
     "zod": "catalog:"
   },
   "peerDependencies": {
     "@invertase/react-native-apple-authentication": "^2.4.0",
     "@react-native-google-signin/google-signin": "^13.0.0",
-    "@supabase/supabase-js": "^2.57.4",
     "expo-linking": "~8.0.0",
     "expo-secure-store": "~14.0.1",
     "expo-web-browser": "~15.0.0",
@@ -38,5 +46,6 @@
     "@tonik/tsconfig": "workspace:*",
     "@types/react": "~19.1.0",
     "typescript": "catalog:"
-  }
+  },
+  "prettier": "@tonik/prettier-config"
 }
