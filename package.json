@@ -49,6 +49,6 @@
   },
   "prettier": "@tonik/prettier-config",
   "boring": {
-    "namespace": "tonik"
+    "namespace": "df"
   }
 }
