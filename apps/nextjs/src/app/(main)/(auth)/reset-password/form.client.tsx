@@ -9,7 +9,7 @@ import {
   ResetPasswordForm as ResetPasswordFormRecipe,
   ResetPasswordSuccessMessage,
   useResetPasswordForm,
-} from "@tonik/auth/recipes/reset-password";
+} from "@tonik/auth-web/recipes/reset-password";
 
 import { api } from "~/trpc/react";
 

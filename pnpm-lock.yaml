@@ -214,6 +214,9 @@ importers:
       '@tonik/auth':
         specifier: workspace:*
         version: link:../../packages/auth
+      '@tonik/auth-web':
+        specifier: workspace:*
+        version: link:../../packages/auth-web
       '@tonik/env':
         specifier: workspace:*
         version: link:../../packages/env
@@ -420,27 +423,9 @@ importers:
 
   packages/auth:
     dependencies:
-      '@icons-pack/react-simple-icons':
-        specifier: ^13.8.0
-        version: 13.8.0(react@19.2.3)
-      '@marsidev/react-turnstile':
-        specifier: ^1.4.0
-        version: 1.4.1(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      '@supabase/supabase-js':
-        specifier: ^2.57.4
-        version: 2.57.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)
       '@tonik/supabase':
         specifier: workspace:*
         version: link:../../supabase
-      '@tonik/tailwind-config':
-        specifier: workspace:*
-        version: link:../../tooling/tailwind
-      '@tonik/ui':
-        specifier: workspace:*
-        version: link:../ui
-      lucide-react:
-        specifier: 'catalog:'
-        version: 0.561.0(react@19.2.3)
       zod:
         specifier: 'catalog:'
         version: 4.2.1
@@ -454,24 +439,58 @@ importers:
       '@tonik/tsconfig':
         specifier: workspace:*
         version: link:../../tooling/typescript
-      '@turbo/gen':
+      typescript:
         specifier: 'catalog:'
-        version: 2.6.3(@types/node@24.10.4)(typescript@5.9.3)
-      eslint:
+        version: 5.9.3
+
+  packages/auth-web:
+    dependencies:
+      '@icons-pack/react-simple-icons':
+        specifier: ^13.8.0
+        version: 13.8.0(react@19.2.3)
+      '@marsidev/react-turnstile':
+        specifier: ^1.4.0
+        version: 1.4.1(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@supabase/supabase-js':
+        specifier: ^2.57.4
+        version: 2.57.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+      '@tonik/auth':
+        specifier: workspace:*
+        version: link:../auth
+      '@tonik/supabase':
+        specifier: workspace:*
+        version: link:../../supabase
+      '@tonik/tailwind-config':
+        specifier: workspace:*
+        version: link:../../tooling/tailwind
+      '@tonik/ui':
+        specifier: workspace:*
+        version: link:../ui
+      lucide-react:
         specifier: 'catalog:'
-        version: 9.39.2(jiti@2.6.1)
+        version: 0.561.0(react@19.2.3)
       next:
         specifier: catalog:react
         version: 15.5.9(@babel/core@7.26.10)(@opentelemetry/api@1.9.0)(@playwright/test@1.58.0-alpha-2025-12-29)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(sass@1.77.4)
-      prettier:
-        specifier: 'catalog:'
-        version: 3.6.2
       react:
         specifier: catalog:react
         version: 19.2.3
       react-dom:
         specifier: catalog:react
         version: 19.2.3(react@19.2.3)
+      zod:
+        specifier: 'catalog:'
+        version: 4.2.1
+    devDependencies:
+      '@tonik/eslint-config':
+        specifier: workspace:*
+        version: link:../../tooling/eslint
+      '@tonik/prettier-config':
+        specifier: workspace:*
+        version: link:../../tooling/prettier
+      '@tonik/tsconfig':
+        specifier: workspace:*
+        version: link:../../tooling/typescript
       typescript:
         specifier: 'catalog:'
         version: 5.9.3

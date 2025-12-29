@@ -1,27 +1,44 @@
 {
-  "name": "@tonik/auth",
+  "name": "@tonik/auth-web",
   "version": "0.1.0",
+  "private": true,
   "type": "module",
   "exports": {
     ".": {
       "types": "./dist/src/index.d.ts",
       "default": "./src/index.ts"
     },
-    "./schemas": {
-      "types": "./dist/src/schemas.d.ts",
-      "default": "./src/schemas.ts"
+    "./middleware": {
+      "types": "./dist/src/middleware.d.ts",
+      "default": "./src/middleware.ts"
+    },
+    "./recipes/*": {
+      "types": "./dist/src/recipes/*.d.ts",
+      "default": "./src/recipes/*.tsx"
     }
   },
   "dependencies": {
+    "@icons-pack/react-simple-icons": "^13.8.0",
+    "@marsidev/react-turnstile": "^1.4.0",
+    "@tonik/auth": "workspace:*",
+    "@tonik/supabase": "workspace:*",
+    "@tonik/tailwind-config": "workspace:*",
+    "@tonik/ui": "workspace:*",
+    "lucide-react": "catalog:",
     "zod": "catalog:"
   },
   "peerDependencies": {
-    "@tonik/supabase": "workspace:*"
+    "@supabase/supabase-js": "^2.57.4",
+    "next": "catalog:react",
+    "react": "catalog:react",
+    "react-dom": "catalog:react"
   },
   "devDependencies": {
     "@tonik/eslint-config": "workspace:*",
     "@tonik/prettier-config": "workspace:*",
     "@tonik/tsconfig": "workspace:*",
+    "@types/react": "catalog:react",
+    "@types/react-dom": "catalog:react",
     "typescript": "catalog:"
   },
   "license": "SEE LICENSE IN LICENSE",

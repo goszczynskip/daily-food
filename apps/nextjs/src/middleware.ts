@@ -1,4 +1,4 @@
-import { createAuthMiddleware } from "@tonik/auth/middleware";
+import { createAuthMiddleware } from "@tonik/auth-web/middleware";
 import { env } from "@tonik/env";
 
 export const middleware = createAuthMiddleware({

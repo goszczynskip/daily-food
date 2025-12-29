@@ -9,7 +9,7 @@ import {
   ForgotPasswordForm as ForgotPasswordFormRecipe,
   ForgotPasswordSuccessMessage,
   useForgotPasswordForm,
-} from "@tonik/auth/recipes/forgot-password";
+} from "@tonik/auth-web/recipes/forgot-password";
 
 import { api } from "~/trpc/react";
 

@@ -11,6 +11,7 @@ import {
 import { Turnstile } from "@marsidev/react-turnstile";
 import { z } from "zod";
 
+import type { loginRequestSchema, providerList } from "@tonik/auth";
 import { cn } from "@tonik/ui";
 import { Button } from "@tonik/ui/button";
 import {
@@ -29,7 +30,6 @@ import { Slot } from "@tonik/ui/slot";
 import { Spinner } from "@tonik/ui/spinner";
 import { useTheme } from "@tonik/ui/theme";
 
-import type { loginRequestSchema, providerList } from "../schemas";
 import { useEventCallback } from "../hooks/use-event-callback";
 
 export type SubmitData = z.infer<typeof loginRequestSchema>;

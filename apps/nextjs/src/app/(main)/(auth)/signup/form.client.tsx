@@ -18,7 +18,7 @@ import {
   LoginUsernamePassword,
   LoginUsernamePasswordFields,
   LoginVariable,
-} from "@tonik/auth/recipes/login";
+} from "@tonik/auth-web/recipes/login";
 import { Alert, AlertDescription, AlertTitle } from "@tonik/ui/alert";
 
 import { api } from "~/trpc/react";

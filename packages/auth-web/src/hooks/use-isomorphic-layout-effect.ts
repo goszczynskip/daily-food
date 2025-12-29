@@ -23,7 +23,7 @@
 
 import * as React from "react";
 
-import { canUseDOM } from "../ssr/index";
+import { canUseDOM } from "../ssr";
 
 /**
  * React currently throws a warning when using useLayoutEffect on the server. To get around it, we can conditionally

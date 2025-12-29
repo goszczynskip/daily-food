@@ -3,6 +3,7 @@ import type { z } from "zod";
 import { createContext, useContext, useMemo } from "react";
 import { AlertCircle, CheckCircle } from "lucide-react";
 
+import { initPasswordResetRequestSchema } from "@tonik/auth";
 import { cn } from "@tonik/ui";
 import { Alert, AlertDescription, AlertTitle } from "@tonik/ui/alert";
 import { Button } from "@tonik/ui/button";
@@ -19,9 +20,8 @@ import { Input } from "@tonik/ui/input";
 import { Spinner } from "@tonik/ui/spinner";
 
 import { useEventCallback } from "../hooks/use-event-callback";
-import { resetPasswordRequestSchema } from "../schemas";
 
-interface ResetPasswordContext {
+interface ForgotPasswordContext {
   mutate: (data: SubmitData) => void;
   variables?: SubmitData;
   error?: { message?: string } | null;
@@ -29,20 +29,22 @@ interface ResetPasswordContext {
   isSuccess?: boolean;
 }
 
-const resetPasswordContext = createContext<ResetPasswordContext | null>(null);
-const Provider = resetPasswordContext.Provider;
+const forgotPasswordContext = createContext<ForgotPasswordContext | null>(null);
+const Provider = forgotPasswordContext.Provider;
 
-type SubmitData = z.infer<typeof resetPasswordRequestSchema>;
+type SubmitData = z.infer<typeof initPasswordResetRequestSchema>;
 
-const useResetPasswordContext = () => {
-  const context = useContext(resetPasswordContext);
+const useForgotPasswordContext = () => {
+  const context = useContext(forgotPasswordContext);
   if (!context) {
-    throw new Error("useResetPasswordContext must be used within a Login");
+    throw new Error(
+      "useForgotPasswordContext must be used within a ForgotPassword component",
+    );
   }
   return context;
 };
 
-interface ResetPasswordProps {
+interface ForgotPasswordProps {
   mutate: (data: SubmitData) => void;
   variables?: SubmitData;
   isPending?: boolean;
@@ -51,14 +53,14 @@ interface ResetPasswordProps {
   children?: ReactNode;
 }
 
-const ResetPassword = ({
+const ForgotPassword = ({
   children,
   mutate,
   error,
   variables,
   isPending,
   isSuccess,
-}: ResetPasswordProps) => {
+}: ForgotPasswordProps) => {
   const mutateCallback = useEventCallback(mutate);
 
   const value = useMemo(
@@ -75,7 +77,7 @@ const ResetPassword = ({
   return <Provider value={value}>{children}</Provider>;
 };
 
-export const useResetPasswordForm = ({
+export const useForgotPasswordForm = ({
   error,
 }: {
   error?: { message?: string } | null;
@@ -83,24 +85,24 @@ export const useResetPasswordForm = ({
   const errors = useMemo(() => {
     return {
       type: undefined,
-      password: error ? { type: "value", message: error.message } : undefined,
+      email: error ? { type: "value", message: error.message } : undefined,
     };
   }, [error]);
 
   return useForm({
-    schema: resetPasswordRequestSchema,
-    defaultValues: { password: "" },
+    schema: initPasswordResetRequestSchema,
+    defaultValues: { email: "" },
     errors: errors,
   });
 };
 
-const ResetPasswordForm = ({
+const ForgotPasswordForm = ({
   form: extForm,
 }: {
-  form?: ReturnType<typeof useResetPasswordForm>;
+  form?: ReturnType<typeof useForgotPasswordForm>;
 }) => {
-  const { error, isPending, mutate } = useResetPasswordContext();
-  const form = useResetPasswordForm({ error });
+  const { error, isPending, mutate } = useForgotPasswordContext();
+  const form = useForgotPasswordForm({ error });
 
   return (
     <Form {...form} {...extForm}>
@@ -110,14 +112,13 @@ const ResetPasswordForm = ({
       >
         <FormField
           control={form.control}
-          name="password"
+          name="email"
           render={({ field, fieldState }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>Email</FormLabel>
               <FormControl>
                 <Input
-                  type="password"
-                  placeholder="Type in your password..."
+                  placeholder="m@example.com"
                   className={cn({
                     ["border-destructive/75"]: fieldState.error,
                   })}
@@ -133,7 +134,7 @@ const ResetPasswordForm = ({
           {isPending ? (
             <Spinner className="text-background" />
           ) : (
-            "Change password"
+            "Send reset email"
           )}
         </Button>
       </form>
@@ -141,26 +142,28 @@ const ResetPasswordForm = ({
   );
 };
 
-const ResetPasswordSuccessMessage = () => {
-  const { isSuccess } = useResetPasswordContext();
+const ForgotPasswordSuccessMessage = () => {
+  const { isSuccess, variables } = useForgotPasswordContext();
 
-  if (!isSuccess) {
+  const email = variables?.email;
+  if (!isSuccess || !email) {
     return null;
   }
 
   return (
     <Alert variant="default" className="mb-2 text-left">
       <CheckCircle className="size-4" />
-      <AlertTitle>Passoword changed</AlertTitle>
+      <AlertTitle>Check your email</AlertTitle>
       <AlertDescription>
-        Now you can login with your new password.
+        We've sent a password reset link to{" "}
+        <span className="font-medium">{email}</span>
       </AlertDescription>
     </Alert>
   );
 };
 
-const ResetPasswordErrorMessage = () => {
-  const { error } = useResetPasswordContext();
+const ForgotPasswordErrorMessage = () => {
+  const { error } = useForgotPasswordContext();
 
   if (!error) {
     return null;
@@ -175,7 +178,7 @@ const ResetPasswordErrorMessage = () => {
   );
 };
 
-const ResetPasswordFooter = ({
+const ForgotPasswordFooter = ({
   children,
   link,
 }: {
@@ -193,9 +196,9 @@ const ResetPasswordFooter = ({
 };
 
 export {
-  ResetPassword,
-  ResetPasswordForm,
-  ResetPasswordSuccessMessage,
-  ResetPasswordErrorMessage,
-  ResetPasswordFooter,
+  ForgotPassword,
+  ForgotPasswordForm,
+  ForgotPasswordSuccessMessage,
+  ForgotPasswordErrorMessage,
+  ForgotPasswordFooter,
 };

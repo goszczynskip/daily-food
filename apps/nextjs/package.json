@@ -8,6 +8,7 @@
     "@tanstack/react-query": "catalog:",
     "@tonik/api": "workspace:*",
     "@tonik/auth": "workspace:*",
+    "@tonik/auth-web": "workspace:*",
     "@tonik/env": "workspace:*",
     "@tonik/logger": "workspace:*",
     "@tonik/supabase": "workspace:*",
