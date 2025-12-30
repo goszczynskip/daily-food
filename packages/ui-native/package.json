@@ -1,0 +1,58 @@
+{
+  "name": "@tonik/ui-native",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "default": "./src/index.ts"
+    },
+    "./*": {
+      "types": "./dist/src/*.d.ts",
+      "default": [
+        "./src/*.tsx",
+        "./src/*.ts"
+      ]
+    },
+    "./lib/*": {
+      "types": "./dist/src/lib/*.d.ts",
+      "default": [
+        "./src/lib/*.ts",
+        "./src/lib/*.tsx"
+      ]
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "git clean -xdf .cache .turbo dist node_modules",
+    "dev": "tsc",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "react-hook-form": "^7.68.0",
+    "tailwind-merge": "^3.4.0"
+  },
+  "peerDependencies": {
+    "lucide-react-native": "^0.460.0",
+    "nativewind": "^4.0.0",
+    "react": "*",
+    "react-native": "*",
+    "react-native-svg": "*",
+    "zod": "*"
+  },
+  "devDependencies": {
+    "@tonik/eslint-config": "workspace:*",
+    "@tonik/prettier-config": "workspace:*",
+    "@tonik/tsconfig": "workspace:*",
+    "@types/react": "catalog:react",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "typescript": "catalog:"
+  },
+  "prettier": "@tonik/prettier-config"
+}
