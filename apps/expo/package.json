@@ -23,6 +23,8 @@
     "@tanstack/react-query": "catalog:",
     "@tonik/api": "workspace:*",
     "@tonik/auth-native": "workspace:*",
+    "@tonik/supabase": "workspace:*",
+    "@tonik/ui-native": "workspace:*",
     "@trpc/client": "catalog:",
     "@trpc/react-query": "catalog:",
     "expo": "~54.0.30",

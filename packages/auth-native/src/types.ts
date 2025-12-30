@@ -1,25 +1,39 @@
-import type { Session, User } from "@supabase/supabase-js";
+import type { z } from "zod";
 
-export interface AuthState {
-  session: Session | null;
-  user: User | null;
-  isLoading: boolean;
-  isAuthenticated: boolean;
+import type {
+  loginRequestSchema,
+  signupRequestSchema,
+} from "@tonik/auth/schemas";
+
+export type LoginRequest = z.infer<typeof loginRequestSchema>;
+export type SignupRequest = z.infer<typeof signupRequestSchema>;
+
+export interface LoginContextValue {
+  mutate: (data: LoginRequest) => void;
+  isPending?: boolean;
+  error?: { message?: string } | null;
+  isSuccess?: boolean;
+  variables?: LoginRequest;
 }
 
-export interface AuthContextType extends AuthState {
-  signInWithApple: () => Promise<void>;
-  signInWithGoogle: () => Promise<void>;
-  signInWithMagicLink: (
-    email: string,
-  ) => Promise<{ success: boolean; message: string }>;
-  signOut: () => Promise<void>;
-  refreshSession: () => Promise<void>;
+export interface SignupContextValue {
+  mutate: (data: SignupRequest) => void;
+  isPending?: boolean;
+  error?: { message?: string } | null;
+  isSuccess?: boolean;
+  variables?: SignupRequest;
 }
 
-export interface AuthProviderProps {
-  children: React.ReactNode;
-  supabaseUrl: string;
-  supabaseAnonKey: string;
-  onAuthStateChange?: (state: AuthState) => void;
+export interface ForgotPasswordContextValue {
+  mutate: (data: { email: string }) => void;
+  isPending?: boolean;
+  error?: { message?: string } | null;
+  isSuccess?: boolean;
+}
+
+export interface ResetPasswordContextValue {
+  mutate: (data: { password: string }) => void;
+  isPending?: boolean;
+  error?: { message?: string } | null;
+  isSuccess?: boolean;
 }

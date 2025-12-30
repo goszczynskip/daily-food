@@ -12,9 +12,8 @@ import {
 import "react-native-reanimated";
 
 import { useColorScheme } from "@/hooks/use-color-scheme";
-import { config } from "@/src/config/env";
-
-import { AuthProvider, useAuth } from "@tonik/auth-native";
+import { AuthProvider, useAuth } from "@/src/providers/auth-provider";
+import { TRPCReactProvider } from "@/src/trpc/react";
 
 export const unstable_settings = {
   anchor: "(tabs)",
@@ -64,11 +63,10 @@ function RootLayoutNav() {
 
 export default function RootLayout() {
   return (
-    <AuthProvider
-      supabaseUrl={config.supabaseUrl}
-      supabaseAnonKey={config.supabaseAnonKey}
-    >
-      <RootLayoutNav />
-    </AuthProvider>
+    <TRPCReactProvider>
+      <AuthProvider>
+        <RootLayoutNav />
+      </AuthProvider>
+    </TRPCReactProvider>
   );
 }

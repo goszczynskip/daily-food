@@ -1025,10 +1025,10 @@ export function LoginSuccess({
 
 ### 4.6 Success Criteria
 
-- [ ] Package builds without Supabase dependency
-- [ ] Compound components export correctly
-- [ ] Components use `@tonik/ui-native` for styling
-- [ ] Pattern matches `auth-web` structure
+- [x] Package builds without Supabase dependency
+- [x] Compound components export correctly
+- [x] Components use `@tonik/ui-native` for styling
+- [x] Pattern matches `auth-web` structure
 
 ---
 
@@ -1398,11 +1398,11 @@ export default function RootLayout() {
 
 ### 5.5 Success Criteria
 
-- [ ] App builds and runs
-- [ ] Auth state persists across app restarts
-- [ ] tRPC mutations work for login/signup
-- [ ] OAuth (Google/Apple) works directly with Supabase
-- [ ] Navigation guards redirect correctly
+- [x] App builds and runs
+- [x] Auth state persists across app restarts
+- [x] tRPC mutations work for login/signup
+- [x] OAuth (Google/Apple) works directly with Supabase
+- [x] Navigation guards redirect correctly
 
 ---
 

@@ -1,42 +1,37 @@
 {
   "name": "@tonik/auth-native",
-  "version": "0.1.0",
   "private": true,
+  "version": "0.1.0",
   "type": "module",
-  "main": "src/index.ts",
   "exports": {
     ".": {
       "types": "./dist/src/index.d.ts",
       "default": "./src/index.ts"
     },
-    "./provider": {
-      "types": "./dist/src/provider.d.ts",
-      "default": "./src/provider.tsx"
-    },
-    "./components": {
-      "types": "./dist/src/components/index.d.ts",
-      "default": "./src/components/index.ts"
+    "./recipes/*": {
+      "types": "./dist/src/recipes/*.d.ts",
+      "default": [
+        "./src/recipes/*.tsx",
+        "./src/recipes/*.ts"
+      ]
     }
   },
   "scripts": {
     "build": "tsc",
     "clean": "git clean -xdf .cache .turbo dist node_modules",
     "dev": "tsc",
-    "format": "prettier --check . --ignore-path ../../.gitignore --ignore-path ./.prettierignore",
     "lint": "eslint",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
     "@tonik/auth": "workspace:*",
-    "@tonik/supabase": "workspace:*",
+    "@tonik/ui-native": "workspace:*",
     "zod": "catalog:"
   },
   "peerDependencies": {
     "@invertase/react-native-apple-authentication": "^2.4.0",
     "@react-native-google-signin/google-signin": "^13.0.0",
-    "expo-linking": "~8.0.0",
-    "expo-secure-store": "~14.0.1",
-    "expo-web-browser": "~15.0.0",
+    "expo-linking": "*",
     "react": "*",
     "react-native": "*"
   },
@@ -44,7 +39,9 @@
     "@tonik/eslint-config": "workspace:*",
     "@tonik/prettier-config": "workspace:*",
     "@tonik/tsconfig": "workspace:*",
-    "@types/react": "~19.1.0",
+    "@types/react": "catalog:react",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
     "typescript": "catalog:"
   },
   "prettier": "@tonik/prettier-config"
