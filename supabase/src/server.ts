@@ -38,3 +38,27 @@ export function createClient(configOptions: BaseOptions) {
     },
   );
 }
+
+interface TokenOptions {
+  supabaseApiUrl: string;
+  supabaseKey: string;
+  accessToken: string;
+}
+
+export function createClientWithToken(options: TokenOptions) {
+  return createServerClient<Database>(
+    options.supabaseApiUrl,
+    options.supabaseKey,
+    {
+      global: {
+        headers: {
+          Authorization: `Bearer ${options.accessToken}`,
+        },
+      },
+      cookies: {
+        getAll: () => [],
+        setAll: () => {},
+      },
+    },
+  );
+}

@@ -419,9 +419,9 @@ import "../global.css";
 
 ### 2.5 Success Criteria
 
-- [ ] Metro bundler starts without errors
-- [ ] NativeWind classes apply correctly to components
-- [ ] Theme CSS variables work (light/dark mode)
+- [x] Metro bundler starts without errors
+- [x] NativeWind classes apply correctly to components
+- [x] Theme CSS variables work (light/dark mode)
 
 ---
 
@@ -637,9 +637,9 @@ export { createClient, createClientWithToken } from "./server";
 
 ### 3.4 Success Criteria
 
-- [ ] tRPC client connects to Next.js backend
-- [ ] Auth token is sent in headers when available
-- [ ] Queries and mutations work from Expo app
+- [x] tRPC client connects to Next.js backend
+- [x] Auth token is sent in headers when available
+- [x] Queries and mutations work from Expo app
 
 ---
 

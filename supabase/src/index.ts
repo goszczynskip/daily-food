@@ -9,3 +9,4 @@ export type User = supabase.User;
 export type { Database };
 export * as Auth from "@supabase/auth-js";
 export * as Supabase from "@supabase/supabase-js";
+export { createClient, createClientWithToken } from "./server";

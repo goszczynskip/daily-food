@@ -6,10 +6,12 @@ export default function Login() {
   const router = useRouter();
 
   return (
-    <LoginScreen
-      onSuccess={() => {
-        router.replace("/(tabs)");
-      }}
-    />
+    <>
+      <LoginScreen
+        onSuccess={() => {
+          router.replace("/(tabs)");
+        }}
+      />
+    </>
   );
 }

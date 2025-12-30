@@ -3,7 +3,7 @@ import superjson from "superjson";
 import z, { ZodError } from "zod";
 
 import type { CookieStore } from "@tonik/supabase";
-import { createClient } from "@tonik/supabase/server";
+import { createClient, createClientWithToken } from "@tonik/supabase/server";
 
 import { createLoggerPlugin } from "./logger";
 
@@ -34,11 +34,23 @@ export const createTRPCContext = async (opts: {
 }) => {
   const source = opts.headers?.get("x-trpc-source") ?? opts.source ?? "unknown";
 
-  const supabaseAnonClient = createClient({
-    supabaseApiUrl: opts.supabase.supabaseUrl,
-    supabaseKey: opts.supabase.supabaseAnonKey,
-    cookieStore: opts.cookieStore,
-  });
+  // Support both cookie-based (web) and token-based (native) auth
+  const authHeader = opts.headers?.get("Authorization");
+  const bearerToken = authHeader?.startsWith("Bearer ")
+    ? authHeader.slice(7)
+    : undefined;
+
+  const supabaseAnonClient = bearerToken
+    ? createClientWithToken({
+        supabaseApiUrl: opts.supabase.supabaseUrl,
+        supabaseKey: opts.supabase.supabaseAnonKey,
+        accessToken: bearerToken,
+      })
+    : createClient({
+        supabaseApiUrl: opts.supabase.supabaseUrl,
+        supabaseKey: opts.supabase.supabaseAnonKey,
+        cookieStore: opts.cookieStore,
+      });
 
   const supabaseServiceClient = createClient({
     supabaseApiUrl: opts.supabase.supabaseUrl,
