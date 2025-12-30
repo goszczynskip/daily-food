@@ -8,6 +8,7 @@
       "types": "./dist/src/index.d.ts",
       "default": "./src/index.ts"
     },
+    "./globals.css": "./src/globals.css",
     "./*": {
       "types": "./dist/src/*.d.ts",
       "default": [

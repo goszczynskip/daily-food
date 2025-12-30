@@ -1,5 +1,4 @@
 import { View } from "react-native";
-import { Link } from "expo-router";
 import { useAuth } from "@/src/providers/auth-provider";
 import { api } from "@/src/trpc/react";
 
@@ -7,15 +6,13 @@ import {
   Login,
   LoginContent,
   LoginErrorMessage,
-  LoginFooter,
   LoginOtpEmail,
+  LoginOtpEmailFields,
   LoginSectionSplitter,
   LoginSocial,
   LoginSocialApple,
   LoginSocialGoogle,
   LoginSuccess,
-  LoginUsernamePassword,
-  LoginUsernamePasswordFields,
 } from "@tonik/auth-native/recipes/login";
 import { Text } from "@tonik/ui-native";
 
@@ -45,41 +42,11 @@ export default function LoginScreen() {
 
           <LoginSectionSplitter />
 
-          <LoginErrorMessage />
-
-          <LoginUsernamePassword>
-            <LoginUsernamePasswordFields
-              forgotPasswordLink={
-                <Link href="/forgot-password" className="text-primary text-sm">
-                  Forgot password?
-                </Link>
-              }
-            />
-          </LoginUsernamePassword>
-
-          <LoginSectionSplitter />
-
           <LoginOtpEmail>
-            <View className="gap-4">
-              <Text className="text-sm font-medium">Email</Text>
-              <View className="gap-2">
-                <Text className="text-muted-foreground text-sm">
-                  Or sign in with a magic link
-                </Text>
-                <Text className="text-primary text-sm">Send magic link</Text>
-              </View>
-            </View>
+            <LoginOtpEmailFields />
           </LoginOtpEmail>
 
-          <LoginFooter
-            link={
-              <Link href="/signup" className="text-primary font-medium">
-                Create one
-              </Link>
-            }
-          >
-            Don't have an account?{" "}
-          </LoginFooter>
+          <LoginErrorMessage />
         </LoginContent>
 
         <LoginSuccess type="otp-email">

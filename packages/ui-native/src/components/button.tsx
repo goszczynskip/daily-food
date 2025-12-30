@@ -1,4 +1,3 @@
-import type { VariantProps } from "class-variance-authority";
 import type { PressableProps } from "react-native";
 import { forwardRef } from "react";
 import { ActivityIndicator, Pressable, Text } from "react-native";

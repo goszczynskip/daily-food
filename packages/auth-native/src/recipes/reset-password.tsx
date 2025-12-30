@@ -3,7 +3,6 @@ import { createContext, useContext } from "react";
 import { View } from "react-native";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
-import { z } from "zod";
 
 import { resetPasswordRequestSchema } from "@tonik/auth/schemas";
 import { Alert, Button, Input, Text } from "@tonik/ui-native";

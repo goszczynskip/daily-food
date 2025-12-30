@@ -10,10 +10,7 @@
     },
     "./recipes/*": {
       "types": "./dist/src/recipes/*.d.ts",
-      "default": [
-        "./src/recipes/*.tsx",
-        "./src/recipes/*.ts"
-      ]
+      "default": "./src/recipes/*.tsx"
     }
   },
   "scripts": {
