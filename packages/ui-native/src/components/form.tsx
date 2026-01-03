@@ -17,7 +17,6 @@ import {
 } from "react-hook-form";
 
 import { cn } from "../lib/utils";
-import { Slot } from "./slot";
 import { Text } from "./text";
 
 const useForm = <TSchema extends ZodType<FieldValues, FieldValues>>(

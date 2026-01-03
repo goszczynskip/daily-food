@@ -1,131 +1,204 @@
 import type { ReactNode } from "react";
-import { createContext, useContext } from "react";
+import { createContext, useContext, useMemo, useRef } from "react";
 import { View } from "react-native";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useForm } from "react-hook-form";
+import type { z } from "zod";
 
 import { resetPasswordRequestSchema } from "@tonik/auth/schemas";
-import { Alert, Button, Input, Text } from "@tonik/ui-native";
+import {
+  Button,
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  Input,
+  Text,
+  useForm,
+  useFormContext,
+} from "@tonik/ui-native";
 
 import type { ResetPasswordContextValue } from "../types";
+import { useEventCallback } from "../hooks/use-event-callback";
 
 const ResetPasswordContext = createContext<ResetPasswordContextValue | null>(
   null,
 );
 
 const useResetPasswordContext = () => {
-  const ctx = useContext(ResetPasswordContext);
-  if (!ctx)
+  const context = useContext(ResetPasswordContext);
+  if (!context) {
     throw new Error(
-      "ResetPassword components must be used within <ResetPassword>",
+      "useResetPasswordContext must be used within a ResetPassword",
     );
-  return ctx;
+  }
+  return context;
 };
 
-export function ResetPassword({
+interface ResetPasswordFormSubmitter {
+  submit: () => void;
+}
+
+const ResetPasswordFormSubmitterContext =
+  createContext<React.MutableRefObject<ResetPasswordFormSubmitter> | null>(
+    null,
+  );
+
+const useResetPasswordFormSubmitter = () => {
+  const context = useContext(ResetPasswordFormSubmitterContext);
+  if (!context) {
+    throw new Error("useResetPasswordFormSubmitter must be used within a form");
+  }
+  return context;
+};
+
+const ResetPassword = ({
   children,
   mutate,
   isPending,
   error,
   isSuccess,
-}: ResetPasswordContextValue & { children: ReactNode }) {
+}: ResetPasswordContextValue & { children: ReactNode }) => {
+  const mutateCallback = useEventCallback(mutate);
+
+  const value = useMemo(
+    () => ({
+      mutate: mutateCallback,
+      error,
+      isPending,
+      isSuccess,
+    }),
+    [error, isPending, mutateCallback],
+  );
+
   return (
-    <ResetPasswordContext.Provider
-      value={{ mutate, isPending, error, isSuccess }}
-    >
+    <ResetPasswordContext.Provider value={value}>
       <View className="bg-background flex-1 p-6">{children}</View>
     </ResetPasswordContext.Provider>
   );
-}
+};
 
-export function ResetPasswordContent({
+const ResetPasswordContent = ({
   hideOnSuccess,
   children,
 }: {
   hideOnSuccess?: boolean;
   children: ReactNode;
-}) {
+}) => {
   const { isSuccess } = useResetPasswordContext();
   if (isSuccess && hideOnSuccess) {
     return null;
   }
   return <>{children}</>;
-}
+};
 
-export function ResetPasswordErrorMessage() {
+const ResetPasswordErrorMessage = () => {
   const { error } = useResetPasswordContext();
   if (!error?.message) return null;
 
   return (
-    <Alert variant="destructive" className="mb-4">
-      <Text className="text-destructive-foreground">{error.message}</Text>
-    </Alert>
+    <View className="bg-destructive/30 border-destructive mb-4 rounded-md border px-4 py-2">
+      <Text className="text-destructive-foreground text-start text-sm">
+        {error.message}
+      </Text>
+    </View>
   );
-}
+};
 
-export function ResetPasswordForm({ children }: { children: ReactNode }) {
-  return <View className="gap-4">{children}</View>;
-}
+type ResetPasswordFormData = z.infer<typeof resetPasswordRequestSchema>;
 
-export function ResetPasswordFormFields() {
-  const { mutate, isPending } = useResetPasswordContext();
+const ResetPasswordForm = ({ children }: { children?: ReactNode }) => {
+  const { mutate, error } = useResetPasswordContext();
+
+  const errors = useMemo(() => {
+    return {
+      password: error ? { type: "value", message: error.message } : undefined,
+    };
+  }, [error]);
 
   const form = useForm({
-    resolver: zodResolver(resetPasswordRequestSchema),
+    schema: resetPasswordRequestSchema,
     defaultValues: { password: "" },
+    errors,
   });
 
-  const onSubmit = form.handleSubmit((data) => {
-    mutate(data);
+  const submitRef = useRef<ResetPasswordFormSubmitter>({
+    submit: () => form.handleSubmit(mutate),
   });
 
   return (
-    <View className="gap-4">
-      <Controller
-        control={form.control}
-        name="password"
-        render={({ field, fieldState }) => (
-          <View className="gap-2">
-            <Text className="text-sm font-medium">New Password</Text>
-            <Input
-              placeholder="********"
-              secureTextEntry
-              value={field.value}
-              onChangeText={field.onChange}
-              editable={!isPending}
-              error={!!fieldState.error}
-            />
-            {fieldState.error && (
-              <Text className="text-destructive text-sm">
-                {fieldState.error.message}
-              </Text>
-            )}
-          </View>
-        )}
-      />
-      <Button onPress={onSubmit} isLoading={isPending} className="mt-4 w-full">
-        Reset password
-      </Button>
-    </View>
+    <ResetPasswordFormSubmitterContext.Provider value={submitRef}>
+      <Form {...form}>
+        <View className="gap-4">{children}</View>
+      </Form>
+    </ResetPasswordFormSubmitterContext.Provider>
   );
+};
+
+const ResetPasswordFormFields = () => {
+  const form = useFormContext<ResetPasswordFormData>();
+
+  return (
+    <FormField
+      control={form.control}
+      name="password"
+      render={({ field, fieldState }) => (
+        <FormItem>
+          <FormLabel className="block">New Password</FormLabel>
+          <Input
+            placeholder="Type in your new password..."
+            className={fieldState.error ? "border-destructive/75" : undefined}
+            value={field.value}
+            onChangeText={field.onChange}
+            editable={!form.formState.isSubmitting}
+            error={!!fieldState.error}
+            secureTextEntry
+          />
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+};
+
+interface ResetPasswordButtonProps {
+  children?: ReactNode;
+  className?: string;
 }
 
-export function ResetPasswordFooter({
+const ResetPasswordButton = ({
+  children,
+  className,
+}: ResetPasswordButtonProps) => {
+  const { isPending } = useResetPasswordContext();
+  const submitter = useResetPasswordFormSubmitter();
+
+  return (
+    <Button
+      className={className}
+      isLoading={isPending}
+      onPress={submitter.current.submit}
+    >
+      {children ?? "Reset password"}
+    </Button>
+  );
+};
+
+const ResetPasswordFooter = ({
   children,
   link,
 }: {
   children: ReactNode;
   link?: ReactNode;
-}) {
+}) => {
   return (
     <View className="mt-6 flex-row justify-center">
       <Text className="text-muted-foreground">{children}</Text>
       {link}
     </View>
   );
-}
+};
 
-export function ResetPasswordSuccess({ children }: { children: ReactNode }) {
+const ResetPasswordSuccess = ({ children }: { children: ReactNode }) => {
   const { isSuccess } = useResetPasswordContext();
 
   if (!isSuccess) {
@@ -133,4 +206,15 @@ export function ResetPasswordSuccess({ children }: { children: ReactNode }) {
   }
 
   return <View className="flex-1 items-center justify-center">{children}</View>;
-}
+};
+
+export {
+  ResetPassword,
+  ResetPasswordForm,
+  ResetPasswordFormFields,
+  ResetPasswordFooter,
+  ResetPasswordButton,
+  ResetPasswordErrorMessage,
+  ResetPasswordSuccess,
+  ResetPasswordContent,
+};

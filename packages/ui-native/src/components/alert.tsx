@@ -1,10 +1,11 @@
 import type { VariantProps } from "class-variance-authority";
-import type { ViewProps } from "react-native";
+import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { forwardRef } from "react";
-import { Text as RNText, View } from "react-native";
+import { View } from "react-native";
 import { cva } from "class-variance-authority";
 
 import { cn } from "../lib/utils";
+import { useThemeVars } from "./theme-provider";
 
 const alertVariants = cva("relative w-full rounded-lg border p-4", {
   variants: {
@@ -22,10 +23,12 @@ const alertVariants = cva("relative w-full rounded-lg border p-4", {
 interface AlertProps extends ViewProps, VariantProps<typeof alertVariants> {}
 
 const Alert = forwardRef<React.ElementRef<typeof View>, AlertProps>(
-  ({ className, variant, ...props }, ref) => {
+  ({ className, variant, style, ...props }, ref) => {
+    const { vars } = useThemeVars();
     return (
       <View
         ref={ref}
+        style={[vars as StyleProp<ViewStyle>, style]}
         className={cn(alertVariants({ variant }), className)}
         {...props}
       />

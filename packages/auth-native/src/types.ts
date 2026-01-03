@@ -14,6 +14,8 @@ export interface LoginContextValue {
   error?: { message?: string } | null;
   isSuccess?: boolean;
   variables?: LoginRequest;
+  localError: { message?: string } | null;
+  setLocalError: (error: { message?: string }) => void;
 }
 
 export interface SignupContextValue {

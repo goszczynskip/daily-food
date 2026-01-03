@@ -12,7 +12,10 @@ import { Supabase } from "@tonik/supabase";
 
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
-const throwIfError = (error: Auth.AuthError | null, logger: Logger) => {
+function throwIfError(
+  error: Auth.AuthError | null,
+  logger: Logger,
+): asserts error is null {
   if (!error) {
     return;
   }
@@ -24,7 +27,7 @@ const throwIfError = (error: Auth.AuthError | null, logger: Logger) => {
     cause: error,
     message: error.message,
   });
-};
+}
 
 export const authRouter = createTRPCRouter({
   me: publicProcedure.query(async ({ ctx }) => {
@@ -110,6 +113,21 @@ export const authRouter = createTRPCRouter({
 
           return;
         }
+        case "social-id-token": {
+          const { error, data } = await ctx.supabase.auth.signInWithIdToken({
+            provider: input.provider,
+            token: input.token,
+            options: { captchaToken: input.captchaToken },
+          });
+
+          throwIfError(error, logger);
+
+          return {
+            session: data.session,
+            user: data.user,
+          };
+        }
+
         default:
           input satisfies never;
           throw new Error(
@@ -162,6 +180,21 @@ export const authRouter = createTRPCRouter({
           throwIfError(error, logger);
 
           return { provider: data.provider, url: data.url };
+        }
+
+        case "social-id-token": {
+          const { error, data } = await ctx.supabase.auth.signInWithIdToken({
+            provider: input.provider,
+            token: input.token,
+            options: { captchaToken: input.captchaToken },
+          });
+
+          throwIfError(error, logger);
+
+          return {
+            session: data.session,
+            user: data.user,
+          };
         }
         case "otp-email": {
           const { error, data } = await ctx.supabase.auth.signInWithOtp({

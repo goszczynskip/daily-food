@@ -1,17 +1,15 @@
-import { useState } from "react";
-import * as SecureStore from "expo-secure-store";
+import { useMemo } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { httpBatchLink, loggerLink } from "@trpc/client";
 import { createTRPCReact } from "@trpc/react-query";
 import SuperJSON from "superjson";
 
 import type { AppRouter } from "@tonik/api";
+import { useAuthStore } from "@tonik/auth-native";
 
 import { config } from "../config/env";
 
 export const api = createTRPCReact<AppRouter>();
-
-const AUTH_TOKEN_KEY = "supabase-auth-token";
 
 function makeQueryClient() {
   return new QueryClient({
@@ -35,27 +33,30 @@ function getQueryClient() {
 
 export function TRPCReactProvider({ children }: { children: React.ReactNode }) {
   const queryClient = getQueryClient();
+  const accessToken = useAuthStore(s => s.session?.access_token);
 
-  const [trpcClient] = useState(() =>
-    api.createClient({
-      links: [
-        loggerLink({
-          enabled: (op) =>
-            __DEV__ || (op.direction === "down" && op.result instanceof Error),
-        }),
-        httpBatchLink({
-          transformer: SuperJSON,
-          url: `${config.apiUrl}/api/trpc`,
-          async headers() {
-            const token = await SecureStore.getItemAsync(AUTH_TOKEN_KEY);
-            return {
-              "x-trpc-source": "expo-react",
-              ...(token && { Authorization: `Bearer ${token}` }),
-            };
-          },
-        }),
-      ],
-    }),
+  const trpcClient = useMemo(
+    () =>
+      api.createClient({
+        links: [
+          loggerLink({
+            enabled: (op) =>
+              __DEV__ ||
+              (op.direction === "down" && op.result instanceof Error),
+          }),
+          httpBatchLink({
+            transformer: SuperJSON,
+            url: `${config.apiUrl}/api/trpc`,
+            async headers() {
+              return {
+                "x-trpc-source": "expo-react",
+                ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
+              };
+            },
+          }),
+        ],
+      }),
+    [accessToken],
   );
 
   return (
@@ -66,9 +67,3 @@ export function TRPCReactProvider({ children }: { children: React.ReactNode }) {
     </QueryClientProvider>
   );
 }
-
-export const authTokenStorage = {
-  set: (token: string) => SecureStore.setItemAsync(AUTH_TOKEN_KEY, token),
-  get: () => SecureStore.getItemAsync(AUTH_TOKEN_KEY),
-  clear: () => SecureStore.deleteItemAsync(AUTH_TOKEN_KEY),
-};

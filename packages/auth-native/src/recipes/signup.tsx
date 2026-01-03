@@ -1,59 +1,96 @@
 import type { ReactNode } from "react";
-import { createContext, useContext } from "react";
+import { createContext, useContext, useMemo, useRef } from "react";
 import { Platform, View } from "react-native";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { emailPasswordSchema } from "@tonik/auth/schemas";
-import { Alert, Button, Input, Separator, Text } from "@tonik/ui-native";
+import {
+  Button,
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  Input,
+  Separator,
+  Text,
+  useForm,
+  useFormContext,
+} from "@tonik/ui-native";
 
 import type { SignupContextValue } from "../types";
+import { useEventCallback } from "../hooks/use-event-callback";
 
-const SignupContext = createContext<SignupContextValue | null>(null);
+const signupContext = createContext<SignupContextValue | null>(null);
+const Provider = signupContext.Provider;
 
 const useSignupContext = () => {
-  const ctx = useContext(SignupContext);
-  if (!ctx) throw new Error("Signup components must be used within <Signup>");
-  return ctx;
+  const context = useContext(signupContext);
+  if (!context) {
+    throw new Error("useSignupContext must be used within a Signup");
+  }
+  return context;
 };
 
-export function Signup({
+interface SignupFormSubmitter {
+  submit: () => void;
+}
+
+const SignupFormSubmitterContext =
+  createContext<React.MutableRefObject<SignupFormSubmitter> | null>(null);
+
+const useSignupFormSubmitter = () => {
+  const context = useContext(SignupFormSubmitterContext);
+  if (!context) {
+    throw new Error(
+      "useSignupFormSubmitter must be used within a form component",
+    );
+  }
+  return context;
+};
+
+const Signup = ({
   children,
   mutate,
   isPending,
   error,
   isSuccess,
   variables,
-}: SignupContextValue & { children: ReactNode }) {
-  return (
-    <SignupContext.Provider
-      value={{ mutate, isPending, error, isSuccess, variables }}
-    >
-      <View className="bg-background flex-1 p-6">{children}</View>
-    </SignupContext.Provider>
-  );
-}
+}: SignupContextValue & { children: ReactNode }) => {
+  const mutateCallback = useEventCallback(mutate);
 
-export function SignupContent({
+  const value = useMemo(
+    () => ({
+      mutate: mutateCallback,
+      error,
+      variables,
+      isPending,
+      isSuccess,
+    }),
+    [error, variables, isPending, mutateCallback],
+  );
+
+  return <Provider value={value}>{children}</Provider>;
+};
+
+const SignupContent = ({
   hideOnSuccess,
   children,
 }: {
   hideOnSuccess?: string;
   children: ReactNode;
-}) {
+}) => {
   const { isSuccess, variables } = useSignupContext();
   if (isSuccess && hideOnSuccess && variables?.type === hideOnSuccess) {
     return null;
   }
   return <>{children}</>;
-}
+};
 
-export function SignupSocial({ children }: { children: ReactNode }) {
+const SignupSocial = ({ children }: { children: ReactNode }) => {
   return <View className="gap-3">{children}</View>;
-}
+};
 
-export function SignupSocialGoogle({ onPress }: { onPress?: () => void }) {
+const SignupSocialGoogle = ({ onPress }: { onPress?: () => void }) => {
   const { isPending } = useSignupContext();
   return (
     <Button
@@ -65,15 +102,15 @@ export function SignupSocialGoogle({ onPress }: { onPress?: () => void }) {
       Continue with Google
     </Button>
   );
-}
+};
 
-export function SignupSocialApple({
+const SignupSocialApple = ({
   onPress,
   showOnAndroid = false,
 }: {
   onPress?: () => void;
   showOnAndroid?: boolean;
-}) {
+}) => {
   const { isPending } = useSignupContext();
 
   if (Platform.OS !== "ios" && !showOnAndroid) {
@@ -90,9 +127,9 @@ export function SignupSocialApple({
       Continue with Apple
     </Button>
   );
-}
+};
 
-export function SignupSectionSplitter() {
+const SignupSectionSplitter = () => {
   return (
     <View className="my-6 flex-row items-center">
       <Separator className="flex-1" />
@@ -100,112 +137,165 @@ export function SignupSectionSplitter() {
       <Separator className="flex-1" />
     </View>
   );
-}
+};
 
-export function SignupErrorMessage() {
+const SignupErrorMessage = () => {
   const { error } = useSignupContext();
   if (!error?.message) return null;
 
   return (
-    <Alert variant="destructive" className="mb-4">
-      <Text className="text-destructive-foreground">{error.message}</Text>
-    </Alert>
+    <View className="bg-destructive/30 border-destructive mb-4 rounded-md border px-4 py-2">
+      <Text className="text-destructive-foreground text-start text-sm">
+        {error.message}
+        <Text className="text-muted-foreground block text-xs">
+          Please try again
+        </Text>
+      </Text>
+    </View>
   );
-}
+};
 
-export function SignupForm({ children }: { children: ReactNode }) {
-  return <View className="gap-4">{children}</View>;
-}
+const signupFormSchema = z.object({
+  type: z.literal("email"),
+  email: z.email({ message: "Invalid email" }),
+  password: z.string().min(1, { message: "Password is required" }),
+  captchaToken: z.string().optional(),
+});
 
-export function SignupFormFields() {
-  const { mutate, isPending } = useSignupContext();
+type SignupFormData = z.infer<typeof signupFormSchema>;
+
+const SignupForm = ({ children }: { children?: ReactNode }) => {
+  const signupContext = useSignupContext();
+
+  const error =
+    signupContext.variables?.type === "email" ? signupContext.error : "";
+
+  const errors = useMemo(() => {
+    return {
+      type: undefined,
+      email: error ? { type: "value", message: "" } : undefined,
+      password: error ? { type: "value", message: error.message } : undefined,
+    };
+  }, [error]);
 
   const form = useForm({
-    resolver: zodResolver(emailPasswordSchema),
-    defaultValues: { email: "", password: "" },
+    schema: signupFormSchema,
+    defaultValues: {
+      type: "email",
+      email: "",
+      password: "",
+      captchaToken: undefined,
+    },
+    errors: errors,
   });
 
-  const onSubmit = form.handleSubmit((data) => {
-    mutate({ type: "email", ...data });
+  const submitRef = useRef<SignupFormSubmitter>({
+    submit: () => form.handleSubmit(signupContext.mutate),
   });
 
   return (
-    <View className="gap-4">
-      <Controller
+    <SignupFormSubmitterContext.Provider value={submitRef}>
+      <Form {...form}>
+        <View className="gap-4">{children}</View>
+      </Form>
+    </SignupFormSubmitterContext.Provider>
+  );
+};
+
+const SignupFormFields = () => {
+  const form = useFormContext<SignupFormData>();
+
+  return (
+    <>
+      <FormField
         control={form.control}
         name="email"
         render={({ field, fieldState }) => (
-          <View className="gap-2">
-            <Text className="text-sm font-medium">Email</Text>
+          <FormItem>
+            <FormLabel className="block">Email</FormLabel>
             <Input
-              placeholder="you@example.com"
+              placeholder="m@example.com"
+              className={fieldState.error ? "border-destructive/75" : undefined}
+              value={field.value}
+              onChangeText={field.onChange}
+              editable={!form.formState.isSubmitting}
+              error={!!fieldState.error}
               keyboardType="email-address"
               autoCapitalize="none"
               autoCorrect={false}
-              value={field.value}
-              onChangeText={field.onChange}
-              editable={!isPending}
-              error={!!fieldState.error}
             />
-            {fieldState.error && (
-              <Text className="text-destructive text-sm">
-                {fieldState.error.message}
-              </Text>
-            )}
-          </View>
+            <FormMessage />
+          </FormItem>
         )}
       />
-      <Controller
+
+      <FormField
         control={form.control}
         name="password"
         render={({ field, fieldState }) => (
-          <View className="gap-2">
-            <Text className="text-sm font-medium">Password</Text>
+          <FormItem>
+            <FormLabel>Password</FormLabel>
             <Input
-              placeholder="********"
-              secureTextEntry
+              placeholder="Type in your password..."
+              className={fieldState.error ? "border-destructive/75" : undefined}
               value={field.value}
               onChangeText={field.onChange}
-              editable={!isPending}
+              editable={!form.formState.isSubmitting}
               error={!!fieldState.error}
+              secureTextEntry
             />
-            {fieldState.error && (
-              <Text className="text-destructive text-sm">
-                {fieldState.error.message}
-              </Text>
-            )}
-          </View>
+            <FormMessage />
+          </FormItem>
         )}
       />
-      <Button onPress={onSubmit} isLoading={isPending} className="mt-4 w-full">
-        Create account
-      </Button>
-    </View>
+    </>
   );
+};
+
+interface SignupButtonProps {
+  children?: ReactNode;
+  className?: string;
 }
 
-export function SignupFooter({
+const SignupButton = ({ children, className }: SignupButtonProps) => {
+  const signupContext = useSignupContext();
+  const submitter = useSignupFormSubmitter();
+
+  const isPending = signupContext.isPending;
+
+  return (
+    <Button
+      className={className}
+      isLoading={isPending}
+      onPress={submitter.current.submit}
+    >
+      {children ?? "Create account"}
+    </Button>
+  );
+};
+
+const SignupFooter = ({
   children,
   link,
 }: {
   children: ReactNode;
   link?: ReactNode;
-}) {
+}) => {
   return (
     <View className="mt-6 flex-row justify-center">
       <Text className="text-muted-foreground">{children}</Text>
       {link}
     </View>
   );
-}
+};
 
-export function SignupSuccess({
+const SignupSuccess = ({
   type,
   children,
 }: {
   type: string;
   children: ReactNode;
-}) {
+}) => {
   const { isSuccess, variables } = useSignupContext();
 
   if (!isSuccess || variables?.type !== type) {
@@ -213,4 +303,19 @@ export function SignupSuccess({
   }
 
   return <View className="flex-1 items-center justify-center">{children}</View>;
-}
+};
+
+export {
+  Signup,
+  SignupForm,
+  SignupFormFields,
+  SignupFooter,
+  SignupButton,
+  SignupSectionSplitter,
+  SignupSocial,
+  SignupSocialGoogle,
+  SignupSocialApple,
+  SignupErrorMessage,
+  SignupSuccess,
+  SignupContent,
+};

@@ -27,6 +27,19 @@ catalogs:
     next: ^15.5.9
     react: ^19.2.3
     react-dom: ^19.2.3
+  native:
+    '@types/react': ~19.1.0
+    '@invertase/react-native-apple-authentication': ^2.5.0
+    '@react-native-google-signin/google-signin': ^16.1.1
+    expo: ~54.0.30
+    expo-linking: ~8.0.11
+    lucide-react-native: ^0.562.0
+    react: 19.1.0
+    react-dom: 19.1.0
+    react-native: 0.81.5
+    react-native-css: ^3.0.1
+    nativewind: 5.0.0-preview.2
+
 
 nodeLinker: hoisted
 

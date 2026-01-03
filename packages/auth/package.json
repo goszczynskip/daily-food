@@ -13,10 +13,8 @@
     }
   },
   "dependencies": {
+    "@tonik/supabase": "workspace:*",
     "zod": "catalog:"
-  },
-  "peerDependencies": {
-    "@tonik/supabase": "workspace:*"
   },
   "devDependencies": {
     "@tonik/eslint-config": "workspace:*",

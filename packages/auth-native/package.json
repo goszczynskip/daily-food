@@ -11,6 +11,10 @@
     "./recipes/*": {
       "types": "./dist/src/recipes/*.d.ts",
       "default": "./src/recipes/*.tsx"
+    },
+    "./login-handlers/*": {
+      "types": "./dist/src/login-handlers/*.d.ts",
+      "default": "./src/login-handlers/*.ts"
     }
   },
   "scripts": {
@@ -21,22 +25,26 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
+    "@invertase/react-native-apple-authentication": "catalog:native",
+    "@react-native-google-signin/google-signin": "catalog:native",
+    "@standard-schema/spec": "^1.1.0",
     "@tonik/auth": "workspace:*",
+    "@tonik/supabase": "workspace:*",
     "@tonik/ui-native": "workspace:*",
-    "zod": "catalog:"
-  },
-  "peerDependencies": {
-    "@invertase/react-native-apple-authentication": "^2.4.0",
-    "@react-native-google-signin/google-signin": "^13.0.0",
-    "expo-linking": "*",
-    "react": "*",
-    "react-native": "*"
+    "expo-linking": "catalog:native",
+    "nativewind": "catalog:native",
+    "react": "catalog:native",
+    "react-dom": "catalog:native",
+    "react-native": "catalog:native",
+    "react-native-css": "catalog:native",
+    "zod": "catalog:",
+    "zustand": "^5.0.9"
   },
   "devDependencies": {
     "@tonik/eslint-config": "workspace:*",
     "@tonik/prettier-config": "workspace:*",
     "@tonik/tsconfig": "workspace:*",
-    "@types/react": "catalog:react",
+    "@types/react": "catalog:native",
     "eslint": "catalog:",
     "prettier": "catalog:",
     "typescript": "catalog:"
