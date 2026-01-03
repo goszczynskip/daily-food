@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { createContext, useContext, useMemo, useRef, useState } from "react";
-import { Platform, useColorScheme, View } from "react-native";
+import { Platform, View } from "react-native";
 import {
   appleAuth,
   AppleButton as BaseAppleButton,
@@ -130,7 +130,6 @@ const LoginSocialApple = ({
   className?: string;
 }) => {
   const { mutate, setLocalError } = useLoginContext();
-  const colorScheme = useColorScheme();
 
   if (Platform.OS !== "ios" && !showOnAndroid) {
     return null;
@@ -140,11 +139,7 @@ const LoginSocialApple = ({
     <AppleButton
       className={cn("m-0 h-12", className)}
       buttonType={BaseAppleButton.Type.SIGN_IN}
-      buttonStyle={
-        colorScheme === "dark"
-          ? BaseAppleButton.Style.WHITE
-          : BaseAppleButton.Style.BLACK
-      }
+      buttonStyle={BaseAppleButton.Style.BLACK}
       onPress={async () => {
         const authResponse = await appleAuth.performRequest({
           requestedOperation: appleAuth.Operation.LOGIN,
@@ -341,7 +336,14 @@ const LoginOtpEmail = ({ children }: { children?: ReactNode }) => {
   });
 
   const submitRef = useRef<LoginFormSubmitter>({
-    submit: () => form.handleSubmit(loginContext.mutate),
+    submit: () => {
+      console.log("Submit pressed")
+      console.log(form.formState.errors)
+      void form.handleSubmit((data) => { 
+        console.log("Form submitted")
+        loginContext.mutate(data)
+      })()
+    },
   });
 
   return (
@@ -403,7 +405,9 @@ const LoginButton = ({
 
   return (
     <Button
-      className={className}
+      size="lg"
+      textClassName="text-lg"
+      className={cn("", className)}
       isLoading={isPending}
       onPress={submitter.current.submit}
     >

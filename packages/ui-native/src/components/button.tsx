@@ -1,15 +1,9 @@
-import type {
-  PressableProps,
-  StyleProp,
-  TextStyle,
-  ViewStyle,
-} from "react-native";
+import type { PressableProps } from "react-native";
 import { forwardRef } from "react";
 import { ActivityIndicator, Pressable, Text } from "react-native";
 import { cva } from "class-variance-authority";
 
 import { cn } from "../lib/utils";
-import { useThemeVars } from "./theme-provider";
 
 const buttonVariants = cva("flex items-center justify-center rounded-md", {
   variants: {
@@ -61,29 +55,34 @@ export interface ButtonProps extends PressableProps {
   isLoading?: boolean;
   className?: string;
   children: React.ReactNode;
+  textClassName?: string;
 }
 
 const Button = forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>(
   (
-    { className, variant, size, isLoading, disabled, children, ...props },
+    {
+      className,
+      variant,
+      size,
+      isLoading,
+      disabled,
+      children,
+      textClassName,
+      ...props
+    },
     ref,
   ) => {
-    const { vars } = useThemeVars();
     return (
       <Pressable
         ref={ref}
-        style={vars as StyleProp<ViewStyle>}
         className={cn(buttonVariants({ variant, size }), className)}
-        disabled={disabled || isLoading}
+        disabled={disabled ?? isLoading}
         {...props}
       >
         {isLoading ? (
           <ActivityIndicator size="small" color="currentColor" />
         ) : (
-          <Text
-            style={vars as StyleProp<TextStyle>}
-            className={cn(buttonTextVariants({ variant }))}
-          >
+          <Text className={cn(buttonTextVariants({ variant }), textClassName)}>
             {children}
           </Text>
         )}

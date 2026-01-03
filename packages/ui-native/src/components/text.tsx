@@ -1,15 +1,11 @@
-import type { VariantProps } from "class-variance-authority";
+import React from "react";
 import type {
   TextProps as RNTextProps,
-  StyleProp,
-  TextStyle,
 } from "react-native";
-import { forwardRef } from "react";
 import { Text as RNText } from "react-native";
 import { cva } from "class-variance-authority";
 
 import { cn } from "../lib/utils";
-import { useThemeVars } from "./theme-provider";
 
 const textVariants = cva("text-foreground", {
   variants: {
@@ -42,22 +38,17 @@ export interface TextProps extends RNTextProps {
     | "small"
     | "muted";
   className?: string;
+  ref?: React.Ref<RNText>;
 }
 
-const Text = forwardRef<React.ElementRef<typeof RNText>, TextProps>(
-  ({ className, variant, style, ...props }, ref) => {
-    const { vars } = useThemeVars();
-    return (
-      <RNText
-        ref={ref}
-        style={[vars as StyleProp<TextStyle>, style]}
-        className={cn(textVariants({ variant }), className)}
-        {...props}
-      />
-    );
-  },
-);
-
-Text.displayName = "Text";
+const Text = ({ className, variant, ref, ...props }: TextProps) => {
+  return (
+    <RNText
+      ref={ref}
+      className={cn(textVariants({ variant }), className)}
+      {...props}
+    />
+  );
+};
 
 export { Text, textVariants };

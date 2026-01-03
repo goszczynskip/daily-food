@@ -1,7 +1,5 @@
 import type { Theme } from "@react-navigation/native";
 import { DarkTheme, DefaultTheme } from "@react-navigation/native";
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-import { vars } from "nativewind";
 
 // CSS variable values for light and dark themes
 const LIGHT_COLORS = {
@@ -48,53 +46,54 @@ const DARK_COLORS = {
   ring: "oklch(0.439 0 0)",
 };
 
-// CSS variables for theming - these inject CSS custom properties at runtime via vars()
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-export const CSS_VARS = {
-  // eslint-disable-next-line @typescript-eslint/no-deprecated
-  light: vars({
-    "--background": LIGHT_COLORS.background,
-    "--foreground": LIGHT_COLORS.foreground,
-    "--card": LIGHT_COLORS.card,
-    "--card-foreground": LIGHT_COLORS.cardForeground,
-    "--popover": LIGHT_COLORS.popover,
-    "--popover-foreground": LIGHT_COLORS.popoverForeground,
-    "--primary": LIGHT_COLORS.primary,
-    "--primary-foreground": LIGHT_COLORS.primaryForeground,
-    "--secondary": LIGHT_COLORS.secondary,
-    "--secondary-foreground": LIGHT_COLORS.secondaryForeground,
-    "--muted": LIGHT_COLORS.muted,
-    "--muted-foreground": LIGHT_COLORS.mutedForeground,
-    "--accent": LIGHT_COLORS.accent,
-    "--accent-foreground": LIGHT_COLORS.accentForeground,
-    "--destructive": LIGHT_COLORS.destructive,
-    "--destructive-foreground": LIGHT_COLORS.destructiveForeground,
-    "--border": LIGHT_COLORS.border,
-    "--input": LIGHT_COLORS.input,
-    "--ring": LIGHT_COLORS.ring,
-  }),
-  // eslint-disable-next-line @typescript-eslint/no-deprecated
-  dark: vars({
-    "--background": DARK_COLORS.background,
-    "--foreground": DARK_COLORS.foreground,
-    "--card": DARK_COLORS.card,
-    "--card-foreground": DARK_COLORS.cardForeground,
-    "--popover": DARK_COLORS.popover,
-    "--popover-foreground": DARK_COLORS.popoverForeground,
-    "--primary": DARK_COLORS.primary,
-    "--primary-foreground": DARK_COLORS.primaryForeground,
-    "--secondary": DARK_COLORS.secondary,
-    "--secondary-foreground": DARK_COLORS.secondaryForeground,
-    "--muted": DARK_COLORS.muted,
-    "--muted-foreground": DARK_COLORS.mutedForeground,
-    "--accent": DARK_COLORS.accent,
-    "--accent-foreground": DARK_COLORS.accentForeground,
-    "--destructive": DARK_COLORS.destructive,
-    "--destructive-foreground": DARK_COLORS.destructiveForeground,
-    "--border": DARK_COLORS.border,
-    "--input": DARK_COLORS.input,
-    "--ring": DARK_COLORS.ring,
-  }),
+/**
+ * Theme objects for VariableContextProvider.
+ * These provide CSS custom properties that override the defaults in globals.css.
+ *
+ * @see https://github.com/nativewind/react-native-css/issues/248#issuecomment-3629819439
+ */
+export const LIGHT_THEME = {
+  "--color-background": LIGHT_COLORS.background,
+  "--color-foreground": LIGHT_COLORS.foreground,
+  "--color-card": LIGHT_COLORS.card,
+  "--color-card-foreground": LIGHT_COLORS.cardForeground,
+  "--color-popover": LIGHT_COLORS.popover,
+  "--color-popover-foreground": LIGHT_COLORS.popoverForeground,
+  "--color-primary": LIGHT_COLORS.primary,
+  "--color-primary-foreground": LIGHT_COLORS.primaryForeground,
+  "--color-secondary": LIGHT_COLORS.secondary,
+  "--color-secondary-foreground": LIGHT_COLORS.secondaryForeground,
+  "--color-muted": LIGHT_COLORS.muted,
+  "--color-muted-foreground": LIGHT_COLORS.mutedForeground,
+  "--color-accent": LIGHT_COLORS.accent,
+  "--color-accent-foreground": LIGHT_COLORS.accentForeground,
+  "--color-destructive": LIGHT_COLORS.destructive,
+  "--color-destructive-foreground": LIGHT_COLORS.destructiveForeground,
+  "--color-border": LIGHT_COLORS.border,
+  "--color-input": LIGHT_COLORS.input,
+  "--color-ring": LIGHT_COLORS.ring,
+};
+
+export const DARK_THEME = {
+  "--color-background": DARK_COLORS.background,
+  "--color-foreground": DARK_COLORS.foreground,
+  "--color-card": DARK_COLORS.card,
+  "--color-card-foreground": DARK_COLORS.cardForeground,
+  "--color-popover": DARK_COLORS.popover,
+  "--color-popover-foreground": DARK_COLORS.popoverForeground,
+  "--color-primary": DARK_COLORS.primary,
+  "--color-primary-foreground": DARK_COLORS.primaryForeground,
+  "--color-secondary": DARK_COLORS.secondary,
+  "--color-secondary-foreground": DARK_COLORS.secondaryForeground,
+  "--color-muted": DARK_COLORS.muted,
+  "--color-muted-foreground": DARK_COLORS.mutedForeground,
+  "--color-accent": DARK_COLORS.accent,
+  "--color-accent-foreground": DARK_COLORS.accentForeground,
+  "--color-destructive": DARK_COLORS.destructive,
+  "--color-destructive-foreground": DARK_COLORS.destructiveForeground,
+  "--color-border": DARK_COLORS.border,
+  "--color-input": DARK_COLORS.input,
+  "--color-ring": DARK_COLORS.ring,
 };
 
 // Legacy THEME export for backwards compatibility

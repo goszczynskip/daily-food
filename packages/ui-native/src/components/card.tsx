@@ -1,19 +1,17 @@
-import type { StyleProp, ViewProps, ViewStyle } from "react-native";
+import type { ViewProps } from "react-native";
 import { forwardRef } from "react";
 import { View } from "react-native";
 
 import { cn } from "../lib/utils";
-import { useThemeVars } from "./theme-provider";
 
 export interface CardProps extends ViewProps {}
 
 const Card = forwardRef<React.ElementRef<typeof View>, CardProps>(
   ({ className, style, ...props }, ref) => {
-    const { vars } = useThemeVars();
     return (
       <View
         ref={ref}
-        style={[vars as StyleProp<ViewStyle>, style]}
+        style={style}
         className={cn("bg-card rounded-xl border p-6 shadow-sm", className)}
         {...props}
       />

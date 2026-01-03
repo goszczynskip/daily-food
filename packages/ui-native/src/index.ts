@@ -24,7 +24,7 @@ export { Alert, AlertTitle, AlertDescription } from "./components/alert";
 
 export { Spinner } from "./components/spinner";
 
-export { ThemeProvider, useThemeVars } from "./components/theme-provider";
+export { ThemeProvider } from "./components/theme-provider";
 
 export {
   useForm,
