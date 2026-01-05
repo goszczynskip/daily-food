@@ -12,22 +12,36 @@ import {
 } from "@react-email/components";
 
 import type { MagicLinkEmailProps } from "../../types";
-import { t, USER_LANG } from "../../components/lang";
+import { t, tr, USER_LANG } from "../../components/lang";
 import { Logo } from "../../components/logo";
 import { withDebugLang } from "../../components/with-debug-lang";
+
+/**
+ * Check if the language value is a runtime language code (e.g., "en", "pl")
+ * vs a Go template variable (e.g., "{{ .Data.language }}")
+ */
+const isRuntimeLang = (lang: string): boolean => {
+  return !lang.includes("{{");
+};
 
 export const MagicLinkEmailBase = ({
   token = "{{ .Token }}",
   siteUrl = "{{ .SiteURL }}",
   lang = USER_LANG,
 }: MagicLinkEmailProps) => {
+  // Use runtime translation (tr) when lang is a real language code,
+  // otherwise use static translation (t) for Go template generation
+  const translate = isRuntimeLang(lang)
+    ? (texts: Record<string, string>) => tr(texts, lang)
+    : (texts: Record<string, string>) => t(texts);
+
   return (
-    <Html lang={lang}>
+    <Html lang={isRuntimeLang(lang) ? lang : undefined}>
       <Head />
       <Tailwind config={{ presets: [pixelBasedPreset] }}>
         <Body className="mx-auto my-auto bg-white px-2 font-sans">
           <Preview>
-            {t({
+            {translate({
               en: "Your Daily Food login code",
               pl: "Twój kod do Daily Food",
             })}
@@ -36,14 +50,14 @@ export const MagicLinkEmailBase = ({
             <Logo className="mx-auto mb-10" siteUrl={siteUrl} />
 
             <Text className="mb-8 text-center text-xl font-semibold">
-              {t({
+              {translate({
                 en: "Sign in to Daily Food",
                 pl: "Dokończ logowanie",
               })}
             </Text>
 
             <Text className="mb-8 text-center">
-              {t({
+              {translate({
                 en: "Enter this code on the sign-in screen to access your account.",
                 pl: "Wpisz jenorazowy kod weryfikacyjny w aplikacji Daily Food.",
               })}
@@ -56,8 +70,8 @@ export const MagicLinkEmailBase = ({
                 </Text>
               </Section>
 
-              <Text className="text-center font-semibold mb-0">
-                {t({
+              <Text className="mb-0 text-center font-semibold">
+                {translate({
                   en: "This code will expire in 1 hour.",
                   pl: "Ten kod wygaśnie za 1 godzinę.",
                 })}
@@ -65,7 +79,7 @@ export const MagicLinkEmailBase = ({
             </Container>
 
             <Text className="text-center">
-              {t({
+              {translate({
                 en: "If you didn't request this code, you can safely ignore this email.",
                 pl: "To nie ty się logujesz? Możesz bezpiecznie zignorować tę wiadomość.",
               })}
@@ -73,7 +87,7 @@ export const MagicLinkEmailBase = ({
 
             <Section className="text-center">
               <Text>
-                {t({
+                {translate({
                   en: "Happy planning!",
                   pl: "Udanego planowania!",
                 })}

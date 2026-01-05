@@ -50,6 +50,26 @@ export const env = createEnv({
     LOG_LEVEL: z
       .enum(["fatal", "error", "warn", "info", "debug", "trace"])
       .default("info"),
+
+    /**
+     * Resend API key for sending transactional emails
+     * @see {@link https://resend.com/docs/api-reference/api-keys}
+     */
+    RESEND_API_KEY: z.string().optional(),
+
+    /**
+     * The "from" email address for Resend emails
+     * Must be a verified domain in Resend
+     * @example "Daily Food <noreply@dailyfood.app>"
+     */
+    RESEND_FROM_EMAIL: z.string().optional(),
+
+    /**
+     * Supabase Auth Hook secret for webhook signature verification
+     * Generated in Supabase Dashboard > Auth > Hooks
+     * @example "v1,whsec_xxxxxxxxxxxx"
+     */
+    SEND_EMAIL_HOOK_SECRET: z.string().optional(),
   },
   /**
    * Specify your client-side environment variables schema here.

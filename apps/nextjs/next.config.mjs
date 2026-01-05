@@ -59,6 +59,12 @@ const config = {
               basePath: false,
               permanent: false,
             },
+            {
+              source: "/_inbox",
+              destination: "http://localhost:54324",
+              basePath: false,
+              permanent: false,
+            },
           ];
         },
 };

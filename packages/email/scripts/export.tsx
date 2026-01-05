@@ -17,6 +17,15 @@ const TEMPLATES = [
       siteUrl: "{{ .SiteURL }}",
     } satisfies ComponentProps<typeof MagicLinkEmail>,
   },
+  {
+    name: "confirmation",
+    component: <MagicLinkEmail />,
+    outputPath: "supabase/templates/confirmation.html",
+    props: {
+      token: "{{ .Token }}",
+      siteUrl: "{{ .SiteURL }}",
+    } satisfies ComponentProps<typeof MagicLinkEmail>,
+  },
 ] as const;
 
 async function exportTemplates() {
