@@ -1,3 +1,4 @@
+import React from 'react';
 import { Img } from "@react-email/components";
 import { cn } from "../lib/utils";
 import { t } from "./lang";

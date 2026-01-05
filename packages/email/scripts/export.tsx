@@ -1,48 +1,52 @@
-#!/usr/bin/env tsx
 import * as fs from "fs/promises";
 import * as path from "path";
 import { fileURLToPath } from "url";
+import type { ComponentProps } from "react";
 import * as React from "react";
 import { render } from "@react-email/components";
+
+import { MagicLinkEmail } from "../src/emails/auth/magic-link";
 
 const TEMPLATES = [
   {
     name: "magic-link",
-    component: "MagicLinkEmail",
-    inputPath: "src/emails/auth/magic-link.tsx",
-    outputPath: "html-exports/auth/magic-link.html",
+    component: <MagicLinkEmail />,
+    outputPath: "supabase/templates/magic_link.html",
     props: {
       token: "{{ .Token }}",
-      email: "{{ .Email }}",
       siteUrl: "{{ .SiteURL }}",
-    },
+    } satisfies ComponentProps<typeof MagicLinkEmail>,
   },
 ] as const;
 
 async function exportTemplates() {
-  const packageDir = path.dirname(fileURLToPath(import.meta.url));
+  const rootDir = path.resolve(
+    path.dirname(fileURLToPath(import.meta.url)),
+    "..",
+    "..",
+    "..",
+  );
 
-  for (const template of TEMPLATES) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const mod = await import(path.join(packageDir, "..", template.inputPath));
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const Component = mod[template.component as string] as React.ElementType;
+  try {
+    for (const template of TEMPLATES) {
+      let html = await render(template.component);
+      // Restore quotes that React escapes as &quot; inside Go template blocks {{ }}
+      html = html.replace(/\{\{([^}]*?)&quot;([^}]*?)\}\}/g, (match) =>
+        match.replace(/&quot;/g, '"'),
+      );
 
-    const html = await render(React.createElement(Component, template.props));
+      const outPath = path.resolve(rootDir, template.outputPath);
+      await fs.mkdir(path.dirname(outPath), { recursive: true });
+      await fs.writeFile(outPath, html, "utf-8");
 
-    const cleanHtml = html
-      .replace(/<!--\[if mso\]>[\s\S]*?<!\[endif\]-->/g, "")
-      .replace(/\{\{ \$dot \}\}/g, "")
-      .replace(/\s+data-.*?="[^"]*"/g, "");
+      console.log(`Exported: ${outPath}`);
+    }
 
-    const outPath = path.join(packageDir, "..", template.outputPath);
-    await fs.mkdir(path.dirname(outPath), { recursive: true });
-    await fs.writeFile(outPath, cleanHtml, "utf-8");
-
-    console.log(`Exported: ${template.outputPath}`);
+    console.log("\nDone! Commit the html-exports/ changes.");
+  } catch (e) {
+    console.error(e);
+    process.exit(1);
   }
-
-  console.log("\nDone! Commit the html-exports/ changes.");
 }
 
 exportTemplates().catch(console.error);
