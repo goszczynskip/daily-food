@@ -38,12 +38,12 @@ export default function LoginScreen() {
         variables={loginMutation.variables}
       >
         <View className="flex-1 justify-center">
-          <Text className="mb-2 text-center text-3xl font-bold">Welcome</Text>
-          <Text className="text-muted-foreground mb-8 text-center">
-            Sign in to continue
-          </Text>
-
           <LoginContent hideOnSuccess="otp-email">
+            <Text className="mb-2 text-center text-3xl font-bold">Welcome</Text>
+            <Text className="text-muted-foreground mb-8 text-center">
+              Sign in to continue
+            </Text>
+
             <LoginSocial>
               <LoginSocialApple />
               <LoginSocialGoogle onPress={() => console.log("google")} />

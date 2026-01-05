@@ -1,0 +1,36 @@
+{
+  "name": "@tonik/email",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "dev": "tsc",
+    "build": "tsc",
+    "clean": "git clean -xdf .cache .turbo dist node_modules",
+    "format": "prettier --check . --ignore-path ../../.gitignore --ignore-path ./.prettierignore",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false",
+    "export": "tsx scripts/export.tsx"
+  },
+  "dependencies": {
+    "@react-email/components": "^1.0.0",
+    "class-variance-authority": "^0.7.1",
+    "react": "catalog:react",
+    "react-dom": "catalog:react",
+    "tailwind-merge": "^3.4.0"
+  },
+  "devDependencies": {
+    "@tonik/eslint-config": "workspace:*",
+    "@tonik/prettier-config": "workspace:*",
+    "@tonik/tsconfig": "workspace:*",
+    "tsx": "^4.21.0",
+    "typescript": "catalog:"
+  },
+  "prettier": "@tonik/prettier-config"
+}

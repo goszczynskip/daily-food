@@ -55,7 +55,7 @@ const config = {
             },
             {
               source: "/_email",
-              destination: "http://localhost:54324",
+              destination: "http://localhost:3001",
               basePath: false,
               permanent: false,
             },

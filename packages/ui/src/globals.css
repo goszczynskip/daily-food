@@ -5,6 +5,7 @@
 @source ".";
 @source "../../auth/src/";
 @source "../../payload/src/";
+@source "../../email/src/";
 
 @custom-variant dark (&:is(.dark *));
 

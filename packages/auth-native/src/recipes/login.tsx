@@ -336,14 +336,10 @@ const LoginOtpEmail = ({ children }: { children?: ReactNode }) => {
   });
 
   const submitRef = useRef<LoginFormSubmitter>({
-    submit: () => {
-      console.log("Submit pressed")
-      console.log(form.formState.errors)
-      void form.handleSubmit((data) => { 
-        console.log("Form submitted")
-        loginContext.mutate(data)
-      })()
-    },
+    submit: () =>
+      void form.handleSubmit((data) => {
+        loginContext.mutate(data);
+      })(),
   });
 
   return (
