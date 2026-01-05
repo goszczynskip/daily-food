@@ -42,13 +42,15 @@ export const providerList = z.enum([
   "fly",
 ]) satisfies z.ZodType<Auth.Provider>;
 
-type OnlyLiterals<T> = T extends string 
-  ? string extends T 
-    ? never 
-    : T 
+type OnlyLiterals<T> = T extends string
+  ? string extends T
+    ? never
+    : T
   : never;
 
-type OIDCProviders = OnlyLiterals<Auth.SignInWithIdTokenCredentials['provider']>
+type OIDCProviders = OnlyLiterals<
+  Auth.SignInWithIdTokenCredentials["provider"]
+>;
 
 export const providerListOIDC = z.enum([
   "apple",
@@ -56,7 +58,7 @@ export const providerListOIDC = z.enum([
   "google",
   "facebook",
   "kakao",
-]) satisfies z.ZodType<OIDCProviders>
+]) satisfies z.ZodType<OIDCProviders>;
 
 export const socialSchema = z.object({
   provider: providerList,
@@ -66,7 +68,7 @@ export const socialWithIdTokenSchema = z.object({
   provider: providerListOIDC,
   token: z.string(),
   captchaToken: z.string().optional(),
-})
+});
 
 export const otpEmailSchema = z.object({
   email: z.string().email(),
@@ -78,6 +80,12 @@ export const otpPhoneSchema = z.object({
   captchaToken: z.string().optional(),
 });
 
+export const otpVerifySchema = z.object({
+  email: z.string().email(),
+  code: z.string().min(6).max(6),
+  messageId: z.string(),
+});
+
 export const loginRequestSchema = z.discriminatedUnion("type", [
   emailPasswordSchema.extend({ type: z.literal("email") }),
   phoneSchema.extend({ type: z.literal("phone") }),
@@ -85,6 +93,7 @@ export const loginRequestSchema = z.discriminatedUnion("type", [
   socialWithIdTokenSchema.extend({ type: z.literal("social-id-token") }),
   otpEmailSchema.extend({ type: z.literal("otp-email") }),
   otpPhoneSchema.extend({ type: z.literal("otp-phone") }),
+  otpVerifySchema.extend({ type: z.literal("otp-verify") }),
 ]);
 
 export const signupRequestSchema = z.discriminatedUnion("type", [

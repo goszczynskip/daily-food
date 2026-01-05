@@ -8,7 +8,7 @@ import {
 import { styled } from "nativewind";
 import { z } from "zod";
 
-import type { loginRequestSchema } from "@tonik/auth/schemas";
+import type { loginRequestSchema, otpVerifySchema } from "@tonik/auth/schemas";
 import {
   Button,
   cn,
@@ -379,6 +379,118 @@ const LoginOtpEmailFields = () => {
   );
 };
 
+type LoginOtpVerifyData = z.infer<typeof loginRequestSchema> & {
+  type: "otp-verify";
+};
+
+const LoginOtpVerify = ({
+  children,
+  email,
+  messageId,
+}: {
+  children?: ReactNode;
+  email: string;
+  messageId: string;
+}) => {
+  const loginContext = useLoginContext();
+
+  const error =
+    loginContext.variables?.type === "otp-verify" ? loginContext.error : null;
+
+  const errors = useMemo(() => {
+    return {
+      type: undefined,
+      code: error ? { type: "value", message: error.message } : undefined,
+    };
+  }, [error]);
+
+  const form = useForm({
+    schema: z.object({
+      type: z.literal("otp-verify"),
+      email: z.string().email({ message: "Invalid email" }),
+      code: z.string().min(6, { message: "Code must be 6 digits" }).max(6),
+      messageId: z.string(),
+    }),
+    defaultValues: {
+      type: "otp-verify",
+      email,
+      code: "",
+      messageId,
+    },
+    errors,
+  });
+
+  const submitRef = useRef<LoginFormSubmitter>({
+    submit: () =>
+      void form.handleSubmit((data) => {
+        loginContext.mutate(data);
+      })(),
+  });
+
+  return (
+    <LoginFormSubmitterContext.Provider value={submitRef}>
+      <Form {...form}>
+        <View className="gap-4">{children}</View>
+      </Form>
+    </LoginFormSubmitterContext.Provider>
+  );
+};
+
+const LoginOtpVerifyFields = () => {
+  const form = useFormContext<LoginOtpVerifyData>();
+
+  return (
+    <View className="gap-4">
+      <Text className="text-muted-foreground text-center">
+        Enter the 6-digit code we sent to your email
+      </Text>
+
+      <FormField
+        control={form.control}
+        name="code"
+        render={({ field, fieldState }) => (
+          <FormItem>
+            <View className="items-center justify-center">
+              <View className="flex-row gap-2">
+                {Array.from({ length: 6 }, (_, index) => {
+                  const chars = field.value.split("")
+                  return (
+                    <Input
+                      key={index}
+                      className={cn(
+                        "h-12 w-12 text-lg font-semibold",
+                        fieldState.error ? "border-destructive/75" : undefined,
+                      )}
+                      value={chars[index] ?? ""}
+                      onChangeText={(text) => {
+                        const currentValue = field.value || "";
+                        const newValue = currentValue.split("");
+                        // Only allow numbers and single character per input
+                        const numericText = text
+                          .replace(/[^0-9]/g, "")
+                          .slice(0, 1);
+                        newValue[index] = numericText;
+                        field.onChange(newValue.join(""));
+                      }}
+                      editable={!form.formState.isSubmitting}
+                      error={!!fieldState.error}
+                      keyboardType="number-pad"
+                      maxLength={1}
+                      textAlign="center"
+                      secureTextEntry={false}
+                    />
+                  );
+                })}
+              </View>
+            </View>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    </View>
+  );
+};
+
 interface LoginButtonProps {
   type?: z.infer<typeof loginRequestSchema>["type"];
   children?: ReactNode;
@@ -449,6 +561,8 @@ export {
   LoginUsernamePasswordFields,
   LoginOtpEmail,
   LoginOtpEmailFields,
+  LoginOtpVerify,
+  LoginOtpVerifyFields,
   LoginFooter,
   LoginButton,
   LoginSectionSplitter,

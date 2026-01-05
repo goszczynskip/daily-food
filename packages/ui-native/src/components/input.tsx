@@ -18,9 +18,11 @@ const Input = ({ className, error, ref, ...props }: InputProps) => {
         "bg-background text-foreground h-10 rounded-md border px-3 py-2 text-sm leading-none",
         "placeholder:text-muted-foreground",
         "focus:border-ring focus:ring-ring/50 focus:ring-2",
-        error &&
-          "border-destructive focus:border-destructive focus:ring-destructive/20",
         "disabled:cursor-not-allowed disabled:opacity-50",
+        {
+          "border-destructive focus:border-destructive focus:ring-destructive/20":
+            error,
+        },
         className,
       )}
       {...props}

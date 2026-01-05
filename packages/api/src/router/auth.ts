@@ -221,6 +221,22 @@ export const authRouter = createTRPCRouter({
 
           return;
         }
+        case "otp-verify": {
+          const { error, data } = await ctx.supabase.auth.verifyOtp({
+            email: input.email,
+            token: input.code,
+            type: "email",
+          });
+
+          throwIfError(error, logger);
+
+          logger.info({ email: input.email }, "OTP verified");
+
+          return {
+            session: data.session,
+            user: data.user,
+          };
+        }
         default:
           input satisfies never;
           throw new TRPCError({

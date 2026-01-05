@@ -10,6 +10,8 @@ import {
   LoginErrorMessage,
   LoginOtpEmail,
   LoginOtpEmailFields,
+  LoginOtpVerify,
+  LoginOtpVerifyFields,
   LoginSectionSplitter,
   LoginSocial,
   LoginSocialApple,
@@ -60,10 +62,30 @@ export default function LoginScreen() {
           </LoginContent>
 
           <LoginSuccess type="otp-email">
-            <Text className="mb-2 text-xl font-semibold">Check your email</Text>
-            <Text className="text-muted-foreground text-center">
-              We&apos;ve sent a login link to your email
-            </Text>
+            {loginMutation.variables?.type === "otp-email" && (
+              <View className="flex-1 justify-center">
+                <Text className="mb-6 text-center text-2xl font-semibold">
+                  Verify your email
+                </Text>
+
+                <LoginOtpVerify
+                  email={loginMutation.variables.email}
+                  messageId=""
+                >
+                  <LoginOtpVerifyFields />
+                  <LoginButton type="otp-verify">Verify Code</LoginButton>
+
+                  <View className="mt-4">
+                    <Text className="text-muted-foreground text-center text-sm">
+                      Didn&apos;t receive the code?
+                    </Text>
+                    <LoginButton type="otp-email" className="mt-2">
+                      Resend Code
+                    </LoginButton>
+                  </View>
+                </LoginOtpVerify>
+              </View>
+            )}
           </LoginSuccess>
         </View>
       </Login>
