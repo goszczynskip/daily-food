@@ -6,6 +6,7 @@ import * as React from "react";
 import { render } from "@react-email/components";
 
 import { MagicLinkEmail } from "../src/emails/auth/magic-link";
+import { SignupEmail } from "../src/emails/auth/signup";
 
 const TEMPLATES = [
   {
@@ -15,16 +16,19 @@ const TEMPLATES = [
     props: {
       token: "{{ .Token }}",
       siteUrl: "{{ .SiteURL }}",
+      lang: "en",
     } satisfies ComponentProps<typeof MagicLinkEmail>,
   },
   {
     name: "confirmation",
-    component: <MagicLinkEmail />,
+    component: <SignupEmail />,
     outputPath: "supabase/templates/confirmation.html",
     props: {
       token: "{{ .Token }}",
       siteUrl: "{{ .SiteURL }}",
-    } satisfies ComponentProps<typeof MagicLinkEmail>,
+      email: "{{ .Email }}",
+      lang: "en",
+    } satisfies ComponentProps<typeof SignupEmail>,
   },
 ] as const;
 

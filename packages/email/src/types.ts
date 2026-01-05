@@ -3,6 +3,15 @@ export interface MagicLinkEmailProps {
   token?: string;
   /** Site URL for reference */
   siteUrl?: string;
-  lang?: string;
-  debugLang?: string | null;
+  lang: string;
+}
+
+export interface SignupEmailProps {
+  /** The 6-digit OTP confirmation code from Supabase */
+  token?: string;
+  /** Site URL for reference */
+  siteUrl?: string;
+  /** User's email address */
+  email?: string;
+  lang: string;
 }

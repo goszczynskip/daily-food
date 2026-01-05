@@ -11,15 +11,16 @@ import {
   Text,
 } from "@react-email/components";
 
-import type { MagicLinkEmailProps } from "../../types";
+import type { SignupEmailProps } from "../../types";
 import { tr } from "../../components/lang";
 import { Logo } from "../../components/logo";
 
-export const MagicLinkEmail = ({
+export const SignupEmail = ({
   token = "{{ .Token }}",
   siteUrl = "{{ .SiteURL }}",
+  email = "{{ .Email }}",
   lang,
-}: MagicLinkEmailProps) => {
+}: SignupEmailProps) => {
   // Use runtime translation (tr) when lang is a real language code,
   // otherwise use static translation (t) for Go template generation
   const t = tr(lang);
@@ -31,8 +32,8 @@ export const MagicLinkEmail = ({
         <Body className="mx-auto my-auto bg-white px-2 font-sans">
           <Preview>
             {t({
-              en: "Your Daily Food login code",
-              pl: "Twój kod do Daily Food",
+              en: "Confirm your Daily Food account",
+              pl: "Potwierdź swoje konto w Daily Food",
             })}
           </Preview>
           <Container className="mx-auto my-10 max-w-lg">
@@ -40,15 +41,15 @@ export const MagicLinkEmail = ({
 
             <Text className="mb-8 text-center text-xl font-semibold">
               {t({
-                en: "Sign in to Daily Food",
-                pl: "Dokończ logowanie",
+                en: "Welcome to Daily Food!",
+                pl: "Witamy w Daily Food!",
               })}
             </Text>
 
             <Text className="mb-8 text-center">
               {t({
-                en: "Enter this code on the sign-in screen to access your account.",
-                pl: "Wpisz jenorazowy kod weryfikacyjny w aplikacji Daily Food.",
+                en: `Thanks for signing up with ${email}. Enter this confirmation code to activate your account.`,
+                pl: `Dziękujemy za rejestrację z ${email}. Wpisz ten kod, aby aktywować swoje konto.`,
               })}
             </Text>
 
@@ -69,8 +70,8 @@ export const MagicLinkEmail = ({
 
             <Text className="text-center">
               {t({
-                en: "If you didn't request this code, you can safely ignore this email.",
-                pl: "To nie ty się logujesz? Możesz bezpiecznie zignorować tę wiadomość.",
+                en: "If you didn't create an account with Daily Food, you can safely ignore this email.",
+                pl: "To nie ty zakładałeś konta? Możesz bezpiecznie zignorować tę wiadomość.",
               })}
             </Text>
 
@@ -91,11 +92,11 @@ export const MagicLinkEmail = ({
   );
 };
 
-MagicLinkEmail.PreviewProps = {
+SignupEmail.PreviewProps = {
   token: "123456",
-  _email: "user@example.com",
+  email: "user@example.com",
   siteUrl: "http://localhost:3000",
   lang: "en",
-} as MagicLinkEmailProps;
+} as SignupEmailProps;
 
-export default MagicLinkEmail;
+export default SignupEmail;

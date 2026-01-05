@@ -16,8 +16,9 @@ import { Resend } from "resend";
 import { Webhook } from "standardwebhooks";
 
 import type { SupportedLanguage } from "@tonik/email";
-import { renderMagicLinkEmail } from "@tonik/email";
+import { renderMagicLinkEmail, renderSignupEmail } from "@tonik/email";
 import { env } from "@tonik/env";
+import { getBaseUrl } from "~/lib/utils";
 
 type EmailType = "magic_link" | "signup" | "recovery" | "email_change";
 
@@ -193,18 +194,36 @@ export async function POST(request: Request) {
     // Get user's preferred language from metadata
     const lang = normalizeLanguage(user.user_metadata.language);
 
-    // Currently only magic_link is implemented
-    if (emailType !== "magic_link") {
-      console.warn(`Email type ${emailType} not yet implemented`);
-      return NextResponse.json({});
-    }
+    // Render the email based on type
+    let html: string;
+    let subject: string;
 
-    // Render the email
-    const { html, subject } = await renderMagicLinkEmail({
-      token: email_data.token,
-      siteUrl: email_data.site_url,
-      lang,
-    });
+    switch (emailType) {
+      case "magic_link":
+        const magicLinkResult = await renderMagicLinkEmail({
+          token: email_data.token,
+          siteUrl: getBaseUrl(),
+          lang,
+        });
+        html = magicLinkResult.html;
+        subject = magicLinkResult.subject;
+        break;
+
+      case "signup":
+        const signupResult = await renderSignupEmail({
+          token: email_data.token,
+          siteUrl: getBaseUrl(),
+          email: user.email,
+          lang,
+        });
+        html = signupResult.html;
+        subject = signupResult.subject;
+        break;
+
+      default:
+        console.warn(`Email type ${emailType} not yet implemented`);
+        return NextResponse.json({});
+    }
 
     // Default from address for development
     const fromEmail =
