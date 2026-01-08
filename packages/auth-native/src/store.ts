@@ -62,6 +62,12 @@ export const createAuthStore = (storage: SecureStorage) =>
           setItem: (key, value) => storage.setItem(key, value),
           removeItem: (key) => storage.removeItem(key),
         })),
+        onRehydrateStorage: () => (state) => {
+          // After rehydration completes, if still "loading" (no stored session), set to "anon"
+          if (state?.state === "loading") {
+            state.setSession(null);
+          }
+        },
       },
     ),
   );

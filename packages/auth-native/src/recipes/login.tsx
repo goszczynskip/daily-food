@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import type { TextInput } from "react-native";
 import { createContext, useContext, useMemo, useRef, useState } from "react";
 import { Platform, View } from "react-native";
 import {
@@ -8,7 +9,7 @@ import {
 import { styled } from "nativewind";
 import { z } from "zod";
 
-import type { loginRequestSchema, otpVerifySchema } from "@tonik/auth/schemas";
+import type { loginRequestSchema } from "@tonik/auth/schemas";
 import {
   Button,
   cn,
@@ -74,8 +75,8 @@ const Login = ({
   );
   const mutateCallback = useEventCallback(mutate);
 
-  const value = useMemo(
-    () => ({
+  const value = useMemo(() => {
+    return {
       mutate: mutateCallback,
       error,
       variables,
@@ -83,9 +84,16 @@ const Login = ({
       isSuccess,
       localError,
       setLocalError,
-    }),
-    [error, variables, isPending, mutateCallback, localError, setLocalError],
-  );
+    };
+  }, [
+    error,
+    variables,
+    isPending,
+    mutateCallback,
+    localError,
+    setLocalError,
+    isSuccess,
+  ]);
 
   return <Provider value={value}>{children}</Provider>;
 };
@@ -112,6 +120,7 @@ const LoginSocialGoogle = ({ onPress }: { onPress?: () => void }) => {
   const { isPending } = useLoginContext();
   return (
     <Button
+      size="lg"
       variant="outline"
       className="w-full"
       onPress={onPress}
@@ -383,14 +392,28 @@ type LoginOtpVerifyData = z.infer<typeof loginRequestSchema> & {
   type: "otp-verify";
 };
 
+const DEFAULT_OTP_LENGTH = 6;
+
+const LoginOtpVerifyContext = createContext<{ length: number } | null>(null);
+
+const useLoginOtpVerifyContext = () => {
+  const context = useContext(LoginOtpVerifyContext);
+  if (!context) {
+    throw new Error(
+      "useLoginOtpVerifyContext must be used within a LoginOtpVerify",
+    );
+  }
+  return context;
+};
+
 const LoginOtpVerify = ({
   children,
   email,
-  messageId,
+  length = DEFAULT_OTP_LENGTH,
 }: {
   children?: ReactNode;
   email: string;
-  messageId: string;
+  length?: number;
 }) => {
   const loginContext = useLoginContext();
 
@@ -408,14 +431,15 @@ const LoginOtpVerify = ({
     schema: z.object({
       type: z.literal("otp-verify"),
       email: z.string().email({ message: "Invalid email" }),
-      code: z.string().min(6, { message: "Code must be 6 digits" }).max(6),
-      messageId: z.string(),
+      code: z
+        .string()
+        .min(length, { message: `Code must be ${length} digits` })
+        .max(length),
     }),
     defaultValues: {
       type: "otp-verify",
       email,
       code: "",
-      messageId,
     },
     errors,
   });
@@ -427,22 +451,128 @@ const LoginOtpVerify = ({
       })(),
   });
 
+  const otpVerifyContextValue = useMemo(() => ({ length }), [length]);
+
   return (
-    <LoginFormSubmitterContext.Provider value={submitRef}>
-      <Form {...form}>
-        <View className="gap-4">{children}</View>
-      </Form>
-    </LoginFormSubmitterContext.Provider>
+    <LoginOtpVerifyContext.Provider value={otpVerifyContextValue}>
+      <LoginFormSubmitterContext.Provider value={submitRef}>
+        <Form {...form}>
+          <View className="gap-4">{children}</View>
+        </Form>
+      </LoginFormSubmitterContext.Provider>
+    </LoginOtpVerifyContext.Provider>
   );
 };
 
 const LoginOtpVerifyFields = () => {
+  const { length } = useLoginOtpVerifyContext();
   const form = useFormContext<LoginOtpVerifyData>();
+  const inputRefs = useRef(Array(length).fill(null) as (TextInput | null)[]);
+  const loginContext = useLoginContext();
+
+  const handleTextChange = (
+    text: string,
+    index: number,
+    field: { value?: string; onChange: (value: string) => void },
+  ) => {
+    const currentValue = field.value ?? "";
+    const newValue = currentValue.split("");
+
+    // Extract only digits from the input
+    const digits = text.replace(/[^0-9]/g, "");
+
+    // Detect paste: more than 1 digit entered at once
+    if (digits.length > 1) {
+      // Check if pasted content contains exact length code
+      const exactMatch = new RegExp(`^\\d{${length}}$`).exec(digits);
+      if (exactMatch) {
+        // Full code pasted - fill all and auto-submit
+        form.setValue("code", exactMatch[0]);
+        inputRefs.current[length - 1]?.focus();
+        // Auto-submit when full code is pasted
+        loginContext.mutate({
+          type: "otp-verify",
+          email: form.getValues("email"),
+          code: exactMatch[0],
+        });
+        return;
+      }
+
+      // Partial paste: fill from current index to the right
+      const availableSlots = length - index;
+      const digitsToFill = digits.slice(0, availableSlots);
+
+      for (let i = 0; i < digitsToFill.length; i++) {
+        newValue[index + i] = digitsToFill[i] ?? "";
+      }
+      field.onChange(newValue.join(""));
+
+      // Focus the next empty input or last filled input
+      const lastFilledIndex = Math.min(
+        index + digitsToFill.length - 1,
+        length - 1,
+      );
+      const nextEmptyIndex = lastFilledIndex + 1;
+      if (nextEmptyIndex < length) {
+        inputRefs.current[nextEmptyIndex]?.focus();
+      } else {
+        inputRefs.current[length - 1]?.blur();
+        // Check if all fields are filled after paste
+        const finalCode = newValue.join("");
+        if (finalCode.length === length) {
+          loginContext.mutate({
+            type: "otp-verify",
+            email: form.getValues("email"),
+            code: finalCode,
+          });
+        }
+      }
+      return;
+    }
+
+    // Single digit input (normal typing)
+    const singleDigit = digits.slice(0, 1);
+    newValue[index] = singleDigit;
+    field.onChange(newValue.join(""));
+
+    // Auto-focus next input if digit entered
+    if (singleDigit) {
+      if (index < length - 1) {
+        inputRefs.current[index + 1]?.focus();
+      } else {
+        inputRefs.current[length - 1]?.blur();
+        // Auto-submit when last digit is entered
+        const finalCode = newValue.join("");
+        if (finalCode.length === length) {
+          loginContext.mutate({
+            type: "otp-verify",
+            email: form.getValues("email"),
+            code: finalCode,
+          });
+        }
+      }
+    }
+  };
+
+  const handleKeyPress = (
+    e: { nativeEvent: { key: string } },
+    index: number,
+    field: { value?: string },
+  ) => {
+    // Handle backspace - focus previous input when current is empty
+    if (
+      e.nativeEvent.key === "Backspace" &&
+      !field.value?.[index] &&
+      index > 0
+    ) {
+      inputRefs.current[index - 1]?.focus();
+    }
+  };
 
   return (
     <View className="gap-4">
       <Text className="text-muted-foreground text-center">
-        Enter the 6-digit code we sent to your email
+        Enter the {length}-digit code we sent to your email
       </Text>
 
       <FormField
@@ -452,32 +582,29 @@ const LoginOtpVerifyFields = () => {
           <FormItem>
             <View className="items-center justify-center">
               <View className="flex-row gap-2">
-                {Array.from({ length: 6 }, (_, index) => {
-                  const chars = field.value.split("")
+                {Array.from({ length }, (_, index) => {
                   return (
                     <Input
                       key={index}
+                      ref={(ref) => {
+                        inputRefs.current[index] = ref;
+                      }}
                       className={cn(
                         "h-12 w-12 text-lg font-semibold",
                         fieldState.error ? "border-destructive/75" : undefined,
                       )}
-                      value={chars[index] ?? ""}
-                      onChangeText={(text) => {
-                        const currentValue = field.value || "";
-                        const newValue = currentValue.split("");
-                        // Only allow numbers and single character per input
-                        const numericText = text
-                          .replace(/[^0-9]/g, "")
-                          .slice(0, 1);
-                        newValue[index] = numericText;
-                        field.onChange(newValue.join(""));
-                      }}
+                      value={field.value[index] ?? ""}
+                      onChangeText={(text) =>
+                        handleTextChange(text, index, field)
+                      }
+                      onKeyPress={(e) => handleKeyPress(e, index, field)}
                       editable={!form.formState.isSubmitting}
                       error={!!fieldState.error}
                       keyboardType="number-pad"
-                      maxLength={1}
                       textAlign="center"
                       secureTextEntry={false}
+                      textContentType="oneTimeCode"
+                      autoComplete="one-time-code"
                     />
                   );
                 })}

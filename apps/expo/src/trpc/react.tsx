@@ -43,6 +43,7 @@ export function TRPCReactProvider({ children }: { children: React.ReactNode }) {
             enabled: (op) =>
               __DEV__ ||
               (op.direction === "down" && op.result instanceof Error),
+            colorMode: "ansi"
           }),
           httpBatchLink({
             transformer: SuperJSON,

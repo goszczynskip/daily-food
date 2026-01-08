@@ -1,6 +1,6 @@
-import React from "react"
 import type { ReactNode } from "react";
-import { View } from "react-native";
+import React from "react";
+import { ScrollView } from "react-native";
 
 import { cn } from "../lib/utils";
 
@@ -9,6 +9,21 @@ interface ScreenLayoutProps {
   className?: string;
 }
 
-export const ScreenLayout = ({ children, className, ...rest }: ScreenLayoutProps) => {
-  return <View className={cn("bg-background text-foreground h-full px-6", className)} {...rest}>{children}</View>;
+export const ScreenLayout = ({
+  children,
+  className,
+  ...rest
+}: ScreenLayoutProps) => {
+  return (
+    <ScrollView
+      className={cn(
+        "bg-background text-foreground h-full px-6",
+        className,
+      )}
+      contentContainerClassName="flex flex-grow justify-center w-full max-w-md py-12"
+      {...rest}
+    >
+      {children}
+    </ScrollView>
+  );
 };

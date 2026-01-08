@@ -83,7 +83,6 @@ export const otpPhoneSchema = z.object({
 export const otpVerifySchema = z.object({
   email: z.string().email(),
   code: z.string().min(6).max(6),
-  messageId: z.string(),
 });
 
 export const loginRequestSchema = z.discriminatedUnion("type", [

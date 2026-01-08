@@ -11,10 +11,6 @@
     "./recipes/*": {
       "types": "./dist/src/recipes/*.d.ts",
       "default": "./src/recipes/*.tsx"
-    },
-    "./login-handlers/*": {
-      "types": "./dist/src/login-handlers/*.d.ts",
-      "default": "./src/login-handlers/*.ts"
     }
   },
   "scripts": {

@@ -15,7 +15,7 @@ const Input = ({ className, error, ref, ...props }: InputProps) => {
     <TextInput
       ref={ref}
       className={cn(
-        "bg-background text-foreground h-10 rounded-md border px-3 py-2 text-sm leading-none",
+        "bg-background text-foreground h-12 rounded-md border px-3 py-2 text-sm leading-none",
         "placeholder:text-muted-foreground",
         "focus:border-ring focus:ring-ring/50 focus:ring-2",
         "disabled:cursor-not-allowed disabled:opacity-50",

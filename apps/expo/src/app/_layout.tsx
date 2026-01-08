@@ -18,6 +18,7 @@ import {
   useAuthStore,
 } from "@tonik/auth-native";
 import { ThemeProvider } from "@tonik/ui-native";
+import { ScreenLayout } from "@tonik/ui-native/recipes/screen";
 import { NAV_THEME } from "@tonik/ui-native/theme";
 
 function RootLayoutNav() {
@@ -32,9 +33,11 @@ function RootLayoutNav() {
   return (
     <NavigationThemeProvider value={NAV_THEME[colorScheme]}>
       <ThemeProvider>
-        {authState !== "authenticated" && <Redirect href="/login" />}
-        <StatusBar style="auto" />
-        <Slot />
+        {authState !== "authenticated" && <Redirect href="/(auth)/login" />}
+        <StatusBar style="dark" />
+        <ScreenLayout>
+          <Slot />
+        </ScreenLayout>
         <PortalHost />
       </ThemeProvider>
     </NavigationThemeProvider>

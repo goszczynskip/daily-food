@@ -18,7 +18,7 @@ const buttonVariants = cva("flex items-center justify-center rounded-md", {
     size: {
       default: "h-10 px-4 py-2",
       sm: "h-9 rounded-md px-3",
-      lg: "h-11 rounded-md px-8",
+      lg: "h-12 rounded-md px-8",
     },
   },
   defaultVariants: {

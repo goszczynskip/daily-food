@@ -97,9 +97,9 @@ export const authRouter = createTRPCRouter({
 
           throwIfError(error, logger);
 
-          logger.info({ emailId: data.messageId }, "Email sent");
+          logger.info({ messageId: data.messageId }, "Email sent");
 
-          return;
+          return { messageId: data.messageId };
         }
         case "otp-phone": {
           const { error, data } = await ctx.supabase.auth.signInWithOtp({
@@ -111,7 +111,7 @@ export const authRouter = createTRPCRouter({
 
           logger.info({ emailId: data.messageId }, "Phone message sent");
 
-          return;
+          return { messageId: data.messageId };
         }
         case "social-id-token": {
           const { error, data } = await ctx.supabase.auth.signInWithIdToken({
@@ -206,7 +206,7 @@ export const authRouter = createTRPCRouter({
 
           logger.info({ emailId: data.messageId }, "Email sent");
 
-          return;
+          return { messageId: data.messageId };
         }
 
         case "otp-phone": {
@@ -219,7 +219,7 @@ export const authRouter = createTRPCRouter({
 
           logger.info({ emailId: data.messageId }, "Phone message sent");
 
-          return;
+          return { messageId: data.messageId };
         }
         case "otp-verify": {
           const { error, data } = await ctx.supabase.auth.verifyOtp({
