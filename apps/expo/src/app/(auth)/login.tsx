@@ -6,7 +6,7 @@ import Animated, {
   Easing
 } from "react-native-reanimated";
 import { Redirect } from "expo-router";
-import { api } from "@/src/trpc/react";
+import { trpc } from "@/src/trpc/react";
 
 import { useAuthStore } from "@tonik/auth-native";
 import {
@@ -23,9 +23,10 @@ import {
   LoginSuccess,
 } from "@tonik/auth-native/recipes/login";
 import { Text } from "@tonik/ui-native";
+import { useMutation } from "@tanstack/react-query";
 
 export default function LoginScreen() {
-  const loginMutation = api.auth.login.useMutation();
+  const loginMutation = useMutation(trpc.auth.login.mutationOptions());
   const isAuthenticated = useAuthStore((s) => s.state === "authenticated");
 
   const keyboard = useAnimatedKeyboard();

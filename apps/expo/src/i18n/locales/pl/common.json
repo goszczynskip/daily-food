@@ -1,0 +1,11 @@
+{
+  "welcome": "Witaj",
+  "signInToContinue": "Zaloguj się, aby kontynuować",
+  "somethingWentWrong": "Coś poszło nie tak",
+  "pleaseTryAgain": "Spróbuj ponownie",
+  "or": "lub",
+  "languages": {
+    "english": "Angielski",
+    "polish": "Polski"
+  }
+}

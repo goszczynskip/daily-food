@@ -1,0 +1,6 @@
+{
+  "helloUser": "Witaj {{name}}",
+  "logOut": "Wyloguj się",
+  "loginViaEmail": "Zaloguj przez email",
+  "verifyCode": "Zweryfikuj kod"
+}

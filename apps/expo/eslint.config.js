@@ -1,10 +1,12 @@
-// https://docs.expo.dev/guides/using-eslint/
-const { defineConfig } = require('eslint/config');
-const expoConfig = require('eslint-config-expo/flat');
+import expoConfig from "eslint-config-expo/flat.js";
 
-module.exports = defineConfig([
-  expoConfig,
+import { restrictEnvAccess } from "@tonik/eslint-config/base";
+
+/** @type {import('@tonik/eslint-config/types').Config} */
+export default [
   {
-    ignores: ['dist/*'],
+    ignores: ["dist/**"],
   },
-]);
+  ...expoConfig,
+  ...restrictEnvAccess,
+];

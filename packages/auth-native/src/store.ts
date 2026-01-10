@@ -1,21 +1,27 @@
+import type { z, ZodError } from "zod";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
 import type { Session } from "@tonik/supabase";
+import type { TypedSession } from "@tonik/supabase/types";
+import { userMetadataSchema } from "@tonik/supabase/schemas";
 
 interface InitialAuthContext {
   state: "loading";
   session: null;
+  error: null;
 }
 
 interface AnonAuthContext {
   state: "anon";
   session: null;
+  error: ZodError<z.infer<typeof userMetadataSchema>> | Error | string | null;
 }
 
 interface AuthenticatedAuthContext {
   state: "authenticated";
-  session: Session;
+  session: TypedSession;
+  error: ZodError<z.infer<typeof userMetadataSchema>> | Error | string | null;
 }
 
 type AuthContext =
@@ -23,18 +29,13 @@ type AuthContext =
   | AnonAuthContext
   | AuthenticatedAuthContext;
 
-interface AuthState {
-  state: AuthContext["state"];
-  session: AuthContext["session"];
-}
-
 interface AuthActions {
   login: (session: Session) => void;
   logout: () => void;
   setSession: (session: Session | null) => void;
 }
 
-export type AuthStore = AuthState & AuthActions;
+export type AuthStore = AuthContext & AuthActions;
 
 export interface SecureStorage {
   getItem: (key: string) => Promise<string | null>;
@@ -48,12 +49,31 @@ export const createAuthStore = (storage: SecureStorage) =>
       (set) => ({
         state: "loading",
         session: null,
+        error: null,
         login: (session) => set({ state: "authenticated", session }),
         logout: () => set({ state: "anon", session: null }),
-        setSession: (session) =>
-          session
-            ? set({ state: "authenticated", session })
-            : set({ state: "anon", session: null }),
+        setSession: (session, error?: string) => {
+          if (!session) {
+            set({ state: "anon", session: null, error });
+            return;
+          }
+
+          const typedSessionResult = userMetadataSchema.safeParse(
+            session.user.user_metadata,
+          );
+
+          if (!typedSessionResult.success) {
+            set({
+              state: "anon",
+              session: null,
+              error: typedSessionResult.error,
+            });
+
+            return;
+          }
+
+          set({ state: "authenticated", session, error });
+        },
       }),
       {
         name: "auth-storage",
