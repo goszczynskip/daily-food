@@ -6,7 +6,7 @@ import Animated, {
   Easing
 } from "react-native-reanimated";
 import { Redirect } from "expo-router";
-import { trpc } from "@/src/trpc/react";
+import { useTrpc } from "@/src/trpc/react";
 
 import { useAuthStore } from "@tonik/auth-native";
 import {
@@ -24,8 +24,11 @@ import {
 } from "@tonik/auth-native/recipes/login";
 import { Text } from "@tonik/ui-native";
 import { useMutation } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 
 export default function LoginScreen() {
+  const trpc = useTrpc()
+  const { t } = useTranslation("auth")
   const loginMutation = useMutation(trpc.auth.login.mutationOptions());
   const isAuthenticated = useAuthStore((s) => s.state === "authenticated");
 
@@ -66,9 +69,9 @@ export default function LoginScreen() {
     >
       <Animated.View style={animatedStyle}>
         <LoginContent hideOnSuccess="otp-email">
-          <Text className="mb-2 text-center text-3xl font-bold">Welcome</Text>
+          <Text className="mb-2 text-center text-3xl font-bold">{t('title-welcome')}</Text>
           <Text className="text-muted-foreground mb-8 text-center">
-            Sign in to continue
+            {t('subtitle-sign-in')}
           </Text>
 
           <LoginSocial>
@@ -76,11 +79,14 @@ export default function LoginScreen() {
             <LoginSocialGoogle onPress={() => console.log("google")} />
           </LoginSocial>
 
-          <LoginSectionSplitter />
+          <LoginSectionSplitter text={t("or")} />
 
           <LoginOtpEmail>
-            <LoginOtpEmailFields />
-            <LoginButton type="otp-email">Login via email</LoginButton>
+            <LoginOtpEmailFields
+              labelText={t('form.email.label')}
+              placeholder={t("form.email.placeholder")}
+            />
+            <LoginButton type="otp-email">{t('form.submit.login-via-email')}</LoginButton>
           </LoginOtpEmail>
 
           <LoginErrorMessage />

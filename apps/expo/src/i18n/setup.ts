@@ -1,14 +1,19 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 
-import { FALLBACK_LANGUAGE, getInitialLanguage, resources } from "./resources";
+import {
+  defaultNS,
+  FALLBACK_LANGUAGE,
+  getInitialLanguage,
+  resources,
+} from "./resources";
 
-i18n.use(initReactI18next).init({
+void i18n.use(initReactI18next).init({
   resources,
   lng: getInitialLanguage(),
   fallbackLng: FALLBACK_LANGUAGE,
-  ns: ["common", "app"],
-  defaultNS: "common",
+  ns: ["common", "app", "auth"],
+  defaultNS: defaultNS,
   interpolation: {
     escapeValue: false,
   },
@@ -18,4 +23,4 @@ i18n.use(initReactI18next).init({
   },
 });
 
-export { i18n };
+export default i18n;

@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { QueryClient } from "@tanstack/react-query";
 import { createTRPCClient, httpBatchLink, loggerLink } from "@trpc/client";
 import { createTRPCOptionsProxy } from "@trpc/tanstack-react-query";
@@ -17,26 +18,35 @@ export const queryClient = new QueryClient({
   },
 });
 
-export const trpc = createTRPCOptionsProxy<AppRouter>({
-  client: createTRPCClient({
-    links: [
-      loggerLink({
-        enabled: (op) =>
-          __DEV__ || (op.direction === "down" && op.result instanceof Error),
-        colorMode: "ansi",
+export const useTrpc = () => {
+  const accessToken = useAuthStore((s) => s.session?.access_token);
+  return useMemo(
+    () =>
+      createTRPCOptionsProxy<AppRouter>({
+        client: createTRPCClient({
+          links: [
+            loggerLink({
+              enabled: (op) =>
+                __DEV__ ||
+                (op.direction === "down" && op.result instanceof Error),
+              colorMode: "ansi",
+            }),
+            httpBatchLink({
+              transformer: superjson,
+              url: `${config.apiUrl}/api/trpc`,
+              headers() {
+                return {
+                  "x-trpc-source": "expo-react",
+                  ...(accessToken && {
+                    Authorization: `Bearer ${accessToken}`,
+                  }),
+                };
+              },
+            }),
+          ],
+        }),
+        queryClient,
       }),
-      httpBatchLink({
-        transformer: superjson,
-        url: `${config.apiUrl}/api/trpc`,
-        async headers() {
-          const accessToken = useAuthStore.getState().session?.access_token;
-          return {
-            "x-trpc-source": "expo-react",
-            ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
-          };
-        },
-      }),
-    ],
-  }),
-  queryClient
-});
+    [accessToken],
+  );
+};

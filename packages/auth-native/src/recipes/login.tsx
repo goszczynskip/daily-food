@@ -185,11 +185,11 @@ const LoginSocialApple = ({
   );
 };
 
-const LoginSectionSplitter = () => {
+const LoginSectionSplitter = ({ text }: { text?: string }) => {
   return (
     <View className="my-6 flex-row items-center">
       <Separator className="flex-1" />
-      <Text className="text-muted-foreground px-4">or</Text>
+      <Text className="text-muted-foreground px-4">{text ?? "or"}</Text>
       <Separator className="flex-1" />
     </View>
   );
@@ -360,7 +360,13 @@ const LoginOtpEmail = ({ children }: { children?: ReactNode }) => {
   );
 };
 
-const LoginOtpEmailFields = () => {
+const LoginOtpEmailFields = ({
+  labelText,
+  placeholder,
+}: {
+  labelText?: string;
+  placeholder?: string;
+}) => {
   const form = useFormContext<LoginOtpEmailData>();
 
   return (
@@ -369,9 +375,9 @@ const LoginOtpEmailFields = () => {
       name="email"
       render={({ field, fieldState }) => (
         <FormItem>
-          <FormLabel>Email</FormLabel>
+          <FormLabel>{labelText ?? "Email"}</FormLabel>
           <Input
-            placeholder="m@example.com"
+            placeholder={placeholder ?? "email@example.com"}
             className={fieldState.error ? "border-destructive/75" : undefined}
             value={field.value}
             onChangeText={field.onChange}

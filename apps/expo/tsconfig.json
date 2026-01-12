@@ -3,11 +3,36 @@
   "compilerOptions": {
     "strict": true,
     "resolveJsonModule": true,
+    "allowJs": true,
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"]
-    }
+      "@/*": ["./*"],
+      "~/*": ["./src/*"]
+    },
+    /** Base Options */
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "moduleDetection": "force",
+    "isolatedModules": true,
+
+    /** Keep TSC performant in monorepos */
+    "incremental": true,
+    "disableSourceOfProjectReferenceRedirect": true,
+    "tsBuildInfoFile": ".cache/tsbuildinfo.json",
+
+    /** Strictness */
+    "noUncheckedIndexedAccess": true,
+    "checkJs": true,
+
+    /** Transpile using Bundler (not tsc) */
+    "module": "Preserve",
+    "moduleResolution": "Bundler",
+    "noEmit": true
   },
   "include": [
+    "eslint.config.js",
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",

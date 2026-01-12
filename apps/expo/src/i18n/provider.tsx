@@ -1,20 +1,23 @@
+import type { ZodError } from "zod";
 import React, { useEffect } from "react";
 import { getLocales } from "expo-localization";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useMutation } from "@tanstack/react-query";
-import { ZodError } from "zod";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
 import { useAuthStore } from "@tonik/auth-native";
 
-import { trpc } from "../trpc/react";
-import { SupportedLanguage, supportedLanguagesSchema } from "./resources";
-import { i18n } from "./setup";
+import type { SupportedLanguage } from "./resources";
+import { useTrpc } from "../trpc/react";
+import { supportedLanguagesSchema } from "./resources";
+import i18n from "./setup";
 
 interface Locale {
   language: SupportedLanguage | null;
+  languageOrigin?: "system" | "user";
   currencyCode: string | null;
+  currencyCodeOrigin?: "system" | "user";
 }
 
 interface RawLocale {
@@ -29,7 +32,7 @@ interface LocaleInitialState {
 
 interface LocaleLoadingState {
   state: "local";
-  locale: null;
+  locale: Locale;
 }
 
 interface LocaleLoadedState {
@@ -39,8 +42,8 @@ interface LocaleLoadedState {
 }
 
 interface LocaleActions {
-  preinitialize: () => void;
-  initialize: (locale?: RawLocale) => void;
+  preinitialize: (locale: RawLocale, currentState: LocaleState) => void;
+  initialize: (locale?: RawLocale) => Promise<void>;
 }
 
 type LocaleState = LocaleInitialState | LocaleLoadingState | LocaleLoadedState;
@@ -54,41 +57,53 @@ const storage = {
 
 export const useLocaleStore = create<LocaleStore>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       state: "init",
       locale: null,
-      preinitialize: () => {
-        set({ state: "local" });
+      preinitialize: (locale: RawLocale, currentState) => {
+        const language = supportedLanguagesSchema.parse(locale.language);
+
+        const stateLocale = currentState.locale;
+
+        set({
+          state: "local",
+          locale: {
+            language:
+              stateLocale?.languageOrigin === "user"
+                ? stateLocale.language
+                : language,
+            currencyCode:
+              stateLocale?.currencyCodeOrigin === "user"
+                ? stateLocale.currencyCode
+                : (locale.currencyCode ?? "USD"),
+            languageOrigin: stateLocale?.languageOrigin ?? "system",
+            currencyCodeOrigin: stateLocale?.currencyCodeOrigin ?? "system",
+          },
+        });
       },
-      initialize: async (locale?: RawLocale) => {
-        if (!locale) {
+      initialize: async (serverSavedLocale?: RawLocale) => {
+        if (!serverSavedLocale) {
           set({ state: "hydrated" });
           return;
         }
 
-        const supportedLanguageResult = supportedLanguagesSchema.safeParse(
-          locale.language,
+        const language = supportedLanguagesSchema.parse(
+          serverSavedLocale.language,
         );
 
-        if (supportedLanguageResult.success) {
-          await i18n.changeLanguage(supportedLanguageResult.data);
+        await i18n.changeLanguage(language);
 
-          set({
-            state: "hydrated",
-            locale: {
-              language: supportedLanguageResult.data ?? null,
-              currencyCode: locale.currencyCode ?? null,
-            },
-          });
-        } else {
-          set({
-            state: "hydrated",
-            locale: {
-              language: null,
-              currencyCode: null,
-            },
-          });
-        }
+        set({
+          state: "hydrated",
+          locale: {
+            language,
+            languageOrigin: serverSavedLocale.language ? "user" : "system",
+            currencyCode: serverSavedLocale.currencyCode ?? "USD",
+            currencyCodeOrigin: serverSavedLocale.currencyCode
+              ? "user"
+              : "system",
+          },
+        });
       },
     }),
     {
@@ -99,13 +114,23 @@ export const useLocaleStore = create<LocaleStore>()(
         removeItem: (key) => storage.removeItem(key),
       })),
       onRehydrateStorage(state) {
-        state.preinitialize();
+        const locales = getLocales();
+        const defaultLocale = locales[0];
+
+        state.preinitialize(
+          {
+            currencyCode: defaultLocale?.currencyCode,
+            language: defaultLocale?.languageCode,
+          },
+          state,
+        );
       },
     },
   ),
 );
 
 export const I18NProvider = ({ children }: { children: React.ReactNode }) => {
+  const trpc = useTrpc();
   const auth = useAuthStore();
   const locale = useLocaleStore();
   const { mutate } = useMutation(
@@ -130,12 +155,7 @@ export const I18NProvider = ({ children }: { children: React.ReactNode }) => {
       return;
     }
 
-    const locales = getLocales();
-    const defaultLocale = locales[0];
-    void locale.initialize({
-      currencyCode: defaultLocale.currencyCode,
-      language: defaultLocale.languageCode,
-    });
+    void locale.initialize();
   }, [
     auth.session?.user.user_metadata.currency_code,
     auth.session?.user.user_metadata.language,
@@ -147,11 +167,13 @@ export const I18NProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     if (
       locale.locale?.language &&
-      auth.session?.user.user_metadata.language !== locale.locale.language
+      auth.session &&
+      auth.session.user.user_metadata.language !== locale.locale.language
     ) {
       mutate({ language: locale.locale.language });
     }
   }, [
+    auth.session,
     auth.session?.user.user_metadata.language,
     locale.locale?.language,
     mutate,

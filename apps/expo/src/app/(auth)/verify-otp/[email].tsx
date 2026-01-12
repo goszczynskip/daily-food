@@ -1,6 +1,6 @@
 import { Text, View } from "react-native";
 import { Redirect, useLocalSearchParams } from "expo-router";
-import { trpc } from "@/src/trpc/react";
+import { useTrpc } from "@/src/trpc/react";
 import { useMutation } from "@tanstack/react-query";
 
 import {
@@ -17,6 +17,7 @@ function VerifyOTPPage() {
   const { email } = useLocalSearchParams<{
     email: string;
   }>();
+  const trpc = useTrpc()
   const loginMutation = useMutation(trpc.auth.login.mutationOptions());
 
   return (

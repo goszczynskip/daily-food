@@ -13,11 +13,8 @@ import { queryClient } from "@/src/trpc/react";
 import { PortalHost } from "@rn-primitives/portal";
 import { QueryClientProvider } from "@tanstack/react-query";
 
-import {
-  SecureStorage,
-  SessionProvider,
-  useAuthStore,
-} from "@tonik/auth-native";
+import type { SecureStorage } from "@tonik/auth-native";
+import { SessionProvider, useAuthStore } from "@tonik/auth-native";
 import { ThemeProvider } from "@tonik/ui-native";
 import { ScreenLayout } from "@tonik/ui-native/recipes/screen";
 import { NAV_THEME } from "@tonik/ui-native/theme";
@@ -27,7 +24,7 @@ import { I18NProvider } from "../i18n/provider";
 function RootLayoutNav() {
   const colorScheme = useColorScheme() ?? "light";
   const authState = useAuthStore((s) => s.state);
-  
+
   // Show nothing while loading auth state (splash screen handles this)
   if (authState === "loading") {
     return null;
